@@ -25,7 +25,6 @@
             border-radius: 50%; z-index: 0; pointer-events: none;
         }
 
-        /* Maintenance Banner & Notice */
         #announcementBanner {
             background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; text-align: center;
             padding: 8px; font-size: 0.85rem; font-weight: 700; display: none;
@@ -48,6 +47,7 @@
             font-family: 'Outfit', sans-serif; font-size: 2.3rem; font-weight: 800;
             background: linear-gradient(to right, #ffffff, #f472b6, #38bdf8);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+            cursor: pointer; user-select: none;
         }
 
         .social-bar { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
@@ -102,7 +102,7 @@
             justify-content: center; font-size: 28px; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5); z-index: 90;
         }
 
-        /* ADMIN PANEL MODAL */
+        /* HIDDEN ADMIN PANEL MODAL */
         #adminModal {
             display: none; position: fixed; top: 0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000;
@@ -120,12 +120,10 @@
         .admin-close { background: #ef4444; border:none; color:white; padding:5px 12px; border-radius:8px; cursor:pointer; }
 
         .footer-note { text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 25px; }
-        .admin-link { color: #f472b6; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Maintenance Screen -->
     <div id="maintenanceScreen">
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
         <h1>Under Maintenance</h1>
@@ -133,7 +131,6 @@
         <button onclick="openAdminModal()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #777; padding: 6px 12px; border-radius: 8px;">Admin Login</button>
     </div>
 
-    <!-- Announcement Notice Banner -->
     <div id="announcementBanner">📢 Notice: Today Special Fresh Strawberry & Red Velvet Available!</div>
 
     <div class="bg-orb-1"></div>
@@ -141,7 +138,8 @@
 
     <header>
         <div class="badge">✨ Freshly Baked Everyday</div>
-        <h1>Royal Cake Studio</h1>
+        <!-- 3 Taps on this Title will open Hidden Admin Panel -->
+        <h1 onclick="handleTitleClick()">Royal Cake Studio</h1>
         <p>Order Handcrafted Custom Cakes in Seconds</p>
         
         <div class="social-bar">
@@ -155,15 +153,11 @@
     </header>
 
     <div class="container">
-        <!-- Popular Cakes Gallery Grid -->
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Flavors</h3>
-            <div class="cake-grid" id="cakeGridContainer">
-                <!-- Dynamic Cakes Injected by JS -->
-            </div>
+            <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
 
-        <!-- Customization Form Card -->
         <div class="glass-card">
             <h2 class="section-title"><i class="fas fa-edit"></i> Custom Order Form</h2>
 
@@ -208,9 +202,7 @@
             </button>
         </div>
 
-        <p class="footer-note">
-            🔒 Direct WhatsApp Ordering | <span class="admin-link" onclick="openAdminModal()">⚙️ Admin Panel</span>
-        </p>
+        <p class="footer-note">🔒 Direct WhatsApp Ordering & Secure Customer Support</p>
     </div>
 
     <a href="https://wa.me/919876543210?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support">
@@ -252,7 +244,6 @@
     </div>
 
     <script>
-        // Default Cake Products
         let defaultCakes = [
             { name: "Dutch Chocolate", price: 500, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
             { name: "Red Velvet", price: 600, img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
@@ -260,22 +251,33 @@
             { name: "Fresh Fruit Cake", price: 550, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300" }
         ];
 
-        // Load Admin Settings from LocalStorage
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
         let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
 
+        let clickCount = 0;
+        let clickTimer = null;
+
+        function handleTitleClick() {
+            clickCount++;
+            if(clickCount === 1) {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            } else if(clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                openAdminModal();
+            }
+        }
+
         function initApp() {
-            // Check Maintenance
             if(isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
             } else {
                 document.getElementById('maintenanceScreen').style.display = 'none';
             }
 
-            // Render Products
             let gridHTML = "";
             let selectHTML = "";
-            cakes.forEach((c, index) => {
+            cakes.forEach((c) => {
                 gridHTML += `
                     <div class="cake-card" onclick="selectCake('${c.name}', ${c.price})">
                         <img src="${c.img}" alt="${c.name}">
@@ -308,7 +310,6 @@
             document.getElementById('totalPrice').innerText = '₹' + Math.round(basePrice * multiplier);
         }
 
-        /* ADMIN FUNCTIONS */
         function openAdminModal() {
             let pass = prompt("Enter Admin Secret Password:");
             if(pass === "admin123") {
