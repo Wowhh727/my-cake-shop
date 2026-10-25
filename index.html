@@ -20,6 +20,12 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: translate(-50%, -30px) scale(0.9); }
+            60% { opacity: 1; transform: translate(-50%, 5px) scale(1.03); }
+            100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+
         .bg-orb-1 {
             position: fixed; top: -100px; left: -100px; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(236,72,153,0.4) 0%, rgba(0,0,0,0) 70%);
@@ -33,7 +39,7 @@
 
         #announcementBanner {
             background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; text-align: center;
-            padding: 8px; font-size: 0.85rem; font-weight: 700; display: none; position: relative; z-index: 10;
+            padding: 8px 14px; font-size: 0.85rem; font-weight: 700; display: none; position: relative; z-index: 10;
         }
 
         #maintenanceScreen {
@@ -41,7 +47,7 @@
             background: #0f172a; z-index: 9999; text-align: center; padding: 50px 20px;
             flex-direction: column; align-items: center; justify-content: center;
         }
-        #maintenanceScreen h1 { font-family: 'Outfit'; font-size: 2.5rem; color: #f472b6; margin-bottom: 15px; }
+        #maintenanceScreen h1 { font-family: 'Outfit', sans-serif; font-size: 2.5rem; color: #f472b6; margin-bottom: 15px; }
 
         header { position: relative; z-index: 1; text-align: center; padding: 30px 20px 15px; }
         .badge {
@@ -140,6 +146,12 @@
             border-color: #f472b6; box-shadow: 0 0 15px rgba(244, 114, 182, 0.3); background: rgba(15, 23, 42, 0.8);
         }
 
+        .cart-active-banner {
+            display: none; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80; padding: 10px 12px; border-radius: 12px; font-size: 0.8rem; margin-top: 8px;
+            justify-content: space-between; align-items: center;
+        }
+
         .price-box {
             background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(99,102,241,0.15));
             border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 20px; padding: 20px; text-align: center; margin-top: 25px;
@@ -182,7 +194,7 @@
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px); z-index: 10000; overflow-y: auto; padding: 20px 15px;
         }
-        #passwordModal, #cartModal, #trackerModal, #invoiceModal { align-items: center; justify-content: center; display: none; }
+        #passwordModal, #cartModal, #trackerModal, #invoiceModal { align-items: center; justify-content: center; }
 
         .modal-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a); border: 2px solid rgba(244, 114, 182, 0.4);
@@ -190,7 +202,7 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7); max-height: 90vh; overflow-y: auto;
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .modal-header h3 { font-family: 'Outfit'; font-size: 1.3rem; color: #f472b6; }
+        .modal-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.3rem; color: #f472b6; }
         .close-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
         .cart-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 0.85rem; }
@@ -212,6 +224,15 @@
         .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
+
+        /* Clean Bill Print Styling */
+        @media print {
+            body * { visibility: hidden; }
+            #invoiceModal, #invoicePrintArea, #invoicePrintArea * { visibility: visible; }
+            #invoiceModal { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; padding: 0; }
+            #invoicePrintArea { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -223,10 +244,10 @@
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
         <h1 id="maintTitle">Under Maintenance</h1>
         <p style="color: #94a3b8; max-width: 300px;">We are currently updating our delicious menu! We will be back online shortly.</p>
-        <button onclick="promptAdminPassword()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #777; padding: 6px 12px; border-radius: 8px;">Admin Login</button>
+        <button onclick="promptAdminPassword()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #777; padding: 6px 12px; border-radius: 8px; cursor: pointer;">Admin Login</button>
     </div>
 
-    <div id="announcementBanner">📢 Notice: Today Special Fresh Strawberry & Red Velvet Available!</div>
+    <div id="announcementBanner"></div>
 
     <div class="bg-orb-1"></div>
     <div class="bg-orb-2"></div>
@@ -258,11 +279,11 @@
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Menu & Cart</h3>
             <div class="category-filter" id="categoryFilterContainer">
-                <div class="cat-pill active" onclick="filterCategory('All')">All</div>
-                <div class="cat-pill" onclick="filterCategory('Birthday')">Birthday</div>
-                <div class="cat-pill" onclick="filterCategory('Anniversary')">Anniversary</div>
-                <div class="cat-pill" onclick="filterCategory('Cupcakes')">Cupcakes</div>
-                <div class="cat-pill" onclick="filterCategory('Add-ons')">Party Add-ons</div>
+                <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
+                <div class="cat-pill" onclick="filterCategory('Birthday', this)">Birthday</div>
+                <div class="cat-pill" onclick="filterCategory('Anniversary', this)">Anniversary</div>
+                <div class="cat-pill" onclick="filterCategory('Cupcakes', this)">Cupcakes</div>
+                <div class="cat-pill" onclick="filterCategory('Add-ons', this)">Party Add-ons</div>
             </div>
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
@@ -274,13 +295,18 @@
         </div>
 
         <!-- Checkout / Custom Order Form Card -->
-        <div class="glass-card">
+        <div class="glass-card" id="checkoutSection">
             <h2 class="section-title"><i class="fas fa-edit"></i> Secure Checkout Form</h2>
 
-            <label>Selected Items / Flavor</label>
+            <label>Selected Cake / Flavor (If Cart is Empty)</label>
             <select id="flavor" onchange="calculatePrice()"></select>
 
-            <label>Select Weight</label>
+            <div id="cartActiveBanner" class="cart-active-banner">
+                <span id="cartActiveText">🛍️ Ordering items from your Cart</span>
+                <button type="button" onclick="clearCartItems()" style="background: rgba(239,68,68,0.25); border: 1px solid #ef4444; color: #fca5a5; padding: 4px 8px; border-radius: 8px; font-size: 0.72rem; cursor: pointer;">Clear Cart</button>
+            </div>
+
+            <label>Select Cake Weight (Applies to Cakes only)</label>
             <select id="weight" onchange="calculatePrice()">
                 <option value="0.5 kg" data-multiplier="1">0.5 kg</option>
                 <option value="1 kg" data-multiplier="1.9">1 kg (Best Value)</option>
@@ -291,13 +317,13 @@
             <label>Message on Cake</label>
             <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!" oninput="updateLiveCakePreview()">
             
-            <!-- Feature 2: AI Live Cake Preview Card -->
+            <!-- AI Live Cake Preview Card -->
             <div id="liveCakePreviewCard" style="display: none; background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15)); border: 1px dashed #f472b6; border-radius: 12px; padding: 12px; text-align: center; margin-top: 8px;">
-                <p style="font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase;">✨ AI Live Preview on Cake</p>
-                <p id="previewTextDisplay" style="font-family: 'Outfit'; font-size: 1.1rem; color: #f472b6; font-weight: bold; margin-top: 4px;"></p>
+                <p style="font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase;">✨ Live Preview on Cake</p>
+                <p id="previewTextDisplay" style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; color: #f472b6; font-weight: bold; margin-top: 4px;"></p>
             </div>
 
-            <label>Delivery Date</label>
+            <label>Delivery Date *</label>
             <input type="date" id="deliveryDate" onchange="checkHolidayDate()">
             <p id="holidayMsg" style="font-size: 0.75rem; color: #ef4444; margin-top: 4px;"></p>
 
@@ -309,8 +335,8 @@
                 <option id="midnightSlotLabel" value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
             </select>
 
-            <label>PIN Code (Geo-Delivery Area Check)</label>
-            <input type="text" id="pincodeInput" placeholder="Enter 6-digit PIN code" oninput="checkPincode()">
+            <label>PIN Code (Delivery Area Check) *</label>
+            <input type="text" id="pincodeInput" maxlength="6" placeholder="Enter 6-digit PIN code" oninput="checkPincode()">
             <p id="pincodeMsg" style="font-size: 0.75rem; color: #38bdf8; margin-top: 4px;"></p>
 
             <label>Coupon Code (Optional)</label>
@@ -329,19 +355,19 @@
             <!-- UPI QR Box -->
             <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
                 <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
-                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px; object-fit: contain;">
-                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
-                <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
+                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 150px; height: 150px; border-radius: 10px; background: #fff; padding: 6px; object-fit: contain;">
+                <p style="font-size: 0.85rem; font-weight: 700; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
+                <label style="margin-top: 10px;">Enter 12-Digit UPI Transaction / UTR No. *</label>
                 <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
             </div>
 
-            <label>Your Name</label>
+            <label>Your Name *</label>
             <input type="text" id="custName" placeholder="Enter your full name">
 
-            <label>Mobile Number (For Order Tracking)</label>
-            <input type="text" id="custPhone" placeholder="Enter 10-digit mobile number">
+            <label>Mobile Number (10-digit for Tracking) *</label>
+            <input type="tel" id="custPhone" maxlength="10" placeholder="Enter 10-digit mobile number">
 
-            <label>Delivery Address</label>
+            <label>Delivery Address *</label>
             <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
 
             <div class="price-box">
@@ -396,7 +422,7 @@
                 <button class="close-btn" onclick="closeTrackerModal()"><i class="fas fa-times"></i></button>
             </div>
             <label>Enter Your Mobile Number</label>
-            <input type="text" id="trackPhoneInput" placeholder="10-digit mobile number" style="margin-bottom: 12px; text-align: center;">
+            <input type="tel" id="trackPhoneInput" maxlength="10" placeholder="10-digit mobile number" style="margin-bottom: 12px; text-align: center;">
             <button class="btn-admin-act" onclick="searchOrderStatus()" style="background: #3b82f6; margin-top: 0;">Check Status</button>
             <div id="trackerResultBox" style="margin-top: 15px; font-size: 0.9rem; text-align: left;"></div>
         </div>
@@ -406,7 +432,7 @@
     <div id="invoiceModal">
         <div class="modal-box" id="invoicePrintArea" style="background: #fff; color: #1e293b; text-align: left;">
             <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
-                <h2 id="invShopName" style="color: #ec4899; font-family: 'Outfit';">Priyatam Cake Studio</h2>
+                <h2 id="invShopName" style="color: #ec4899; font-family: 'Outfit', sans-serif;">Priyatam Cake Studio</h2>
                 <p style="font-size: 0.75rem; color: #64748b;">Official Digital Order Receipt</p>
             </div>
             <div style="font-size: 0.85rem; line-height: 1.6;">
@@ -414,15 +440,15 @@
                 <p><b>Customer:</b> <span id="invCustName"></span></p>
                 <p><b>Mobile:</b> <span id="invPhone"></span></p>
                 <p><b>Items:</b> <span id="invItems"></span></p>
-                <p><b>Weight:</b> <span id="invWeight"></span></p>
-                <p><b>Message:</b> <span id="invMessage"></span></p>
+                <p><b>Cake Weight:</b> <span id="invWeight"></span></p>
+                <p><b>Message on Cake:</b> <span id="invMessage"></span></p>
                 <p><b>Delivery Date & Time:</b> <span id="invDateTime"></span></p>
                 <p><b>Delivery Address:</b> <span id="invAddress"></span></p>
-                <p><b>Payment:</b> <span id="invPayment"></span></p>
-                <h3 style="color: #16a34a; margin-top: 10px; text-align: right;">Total Paid: <span id="invTotal"></span></h3>
+                <p><b>Payment Mode:</b> <span id="invPayment"></span></p>
+                <h3 style="color: #16a34a; margin-top: 10px; text-align: right;">Total Payable: <span id="invTotal"></span></h3>
             </div>
-            <button class="btn-admin-act" onclick="window.print()" style="background: #334155; margin-top: 15px;"><i class="fas fa-print"></i> Print / Save Bill</button>
-            <button class="btn-admin-act" onclick="closeInvoiceModal()" style="background: #ef4444; margin-top: 8px;">Close</button>
+            <button class="btn-admin-act no-print" onclick="window.print()" style="background: #334155; margin-top: 15px;"><i class="fas fa-print"></i> Print / Save Bill</button>
+            <button class="btn-admin-act no-print" onclick="closeInvoiceModal()" style="background: #ef4444; margin-top: 8px;">Close</button>
         </div>
     </div>
 
@@ -455,14 +481,16 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 1. Notification Sound & Realtime Alert Settings -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bell"></i> Live Alarm & Sound Settings</h3>
+            <!-- 1. Notification Sound & Top Announcement Banner -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bullhorn"></i> Announcement & Sound Settings</h3>
+            <label>Top Announcement Banner Text (Leave empty to hide)</label>
+            <input type="text" id="adminAnnouncementInput" placeholder="e.g. Today Special Fresh Strawberry Available!">
             <label>Order Notification Audio Alert</label>
             <select id="adminSoundToggle">
                 <option value="ON">Enabled (Loud Alarm On New Order)</option>
                 <option value="OFF">Disabled</option>
             </select>
-            <button class="btn-admin-act" onclick="playNotificationSound()" style="background: #3b82f6; margin-top: 6px;">Test Alarm Sound</button>
+            <button class="btn-admin-act" onclick="playNotificationSound()" style="background: #3b82f6; margin-top: 8px;">Test Alarm Sound</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -470,7 +498,7 @@
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Payment QR Settings</h3>
             <label>Shop / Brand Name</label>
             <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
-            <label>WhatsApp Number (Without +91)</label>
+            <label>WhatsApp Number (10 digits without +91)</label>
             <input type="text" id="adminWpNum" placeholder="6001785308">
             <label>Instagram Profile URL</label>
             <input type="text" id="adminInstaUrl" placeholder="https://www.instagram.com/priyatam._">
@@ -478,7 +506,7 @@
             <input type="text" id="adminUpiId" placeholder="6001785308@paytm">
             <label>Custom UPI QR Code Image URL (Optional)</label>
             <input type="text" id="adminCustomQrUrl" placeholder="https://i.ibb.co/...">
-            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop & QR Settings</button>
+            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop, Banner & QR Settings</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -489,7 +517,7 @@
             <label>Standard Delivery Fee (₹)</label>
             <input type="number" id="adminDeliveryFee" placeholder="50">
             <label>Free Delivery Threshold Amount (₹)</label>
-            <input type="number" id="adminFreeDeliveryLimit" placeholder="999 (Orders above this = Free Delivery)">
+            <input type="number" id="adminFreeDeliveryLimit" placeholder="999">
             <label>Midnight Delivery Extra Charge (₹)</label>
             <input type="number" id="adminMidnightFee" placeholder="100">
             <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
@@ -500,7 +528,7 @@
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-calendar-times"></i> Holiday / Blockout Date</h3>
             <label>Block Specific Date (No Deliveries)</label>
             <input type="date" id="adminBlockDate">
-            <button class="btn-admin-act" onclick="saveBlockDate()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Block Date</button>
+            <button class="btn-admin-act" onclick="saveBlockDate()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Save Blocked Date</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -523,33 +551,34 @@
                 <option value="Cupcakes">Cupcakes</option>
                 <option value="Add-ons">Party Add-ons (Candles, Caps, Knife)</option>
             </select>
-            <label>Price (₹)</label>
+            <label>Base Price (₹)</label>
             <input type="number" id="newCakePrice" placeholder="450">
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
             <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
             <label style="margin-top: 12px;">Existing Products & Add-ons Management</label>
-            <div class="order-history-box" id="adminCakesList" style="max-height: 140px;"></div>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 150px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
             <!-- 7. Coupons -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-tag"></i> Manage Discount Coupons</h3>
             <label>Coupon Code</label>
             <input type="text" id="newCouponCode" placeholder="e.g. FESTIVE20" style="text-transform: uppercase;">
             <label>Discount Percentage (%)</label>
             <input type="number" id="newCouponDisc" placeholder="15">
             <button class="btn-admin-act" onclick="addNewCoupon()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Add Coupon</button>
+            <div class="order-history-box" id="adminCouponsList" style="max-height: 120px; margin-top: 10px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
             <!-- 8. Live Orders & Status Updater with WhatsApp Bot Button -->
-            <label>📋 Live Orders & WhatsApp Status Bot</label>
+            <label>📋 Live Cloud Orders & WhatsApp Status Bot</label>
             <div class="order-history-box" id="orderHistoryContainer" style="max-height: 240px;">
-                <p style="color: #64748b; text-align: center;">No orders yet.</p>
+                <p style="color: #64748b; text-align: center;">Loading orders...</p>
             </div>
-            <button class="btn-admin-act" onclick="clearOrders()" style="background: #ef4444; font-size: 0.8rem; padding: 8px;">Clear Orders History</button>
+            <button class="btn-admin-act" onclick="clearOrders()" style="background: #ef4444; font-size: 0.8rem; padding: 8px;">Clear All Orders History</button>
         </div>
     </div>
 
@@ -568,7 +597,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let shopConfig = JSON.parse(localStorage.getItem('shop_config')) || {
+        let defaultShopConfig = {
             name: "Priyatam Cake Studio",
             whatsapp: "6001785308",
             instagram: "https://www.instagram.com/priyatam._",
@@ -580,7 +609,9 @@
             midnightFee: 100,
             blockedDate: "",
             adminPass: "admin123",
-            soundAlert: "ON"
+            soundAlert: "ON",
+            announcement: "Notice: Today Special Fresh Strawberry & Red Velvet Available!",
+            isMaintenance: false
         };
 
         let defaultCakes = [
@@ -602,19 +633,71 @@
             { code: "PRIYATAM20", discount: 20 }
         ];
 
+        let shopConfig = JSON.parse(localStorage.getItem('shop_config')) || defaultShopConfig;
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
         let reviews = JSON.parse(localStorage.getItem('reviews_data')) || defaultReviews;
         let coupons = JSON.parse(localStorage.getItem('coupons_data')) || defaultCoupons;
         let cart = JSON.parse(localStorage.getItem('cart_data')) || [];
-        
-        let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
-        let customAnnouncement = localStorage.getItem('site_announcement') || "";
+
         let appliedDiscount = 0;
         let appliedCouponCode = "";
         let currentFilter = "All";
+        let currentFinalPayable = 500;
 
         let clickCount = 0;
         let clickTimer = null;
+
+        // Sync store settings with Firebase Cloud so all customers see Admin updates
+        function syncStoreSettingsToCloud() {
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            localStorage.setItem('coupons_data', JSON.stringify(coupons));
+
+            db.collection("settings").doc("store_data").set({
+                shopConfig: shopConfig,
+                cakes: cakes,
+                coupons: coupons,
+                updatedAt: Date.now()
+            }, { merge: true }).catch(err => console.warn("Cloud sync warning:", err));
+        }
+
+        function listenToCloudSettings() {
+            db.collection("settings").doc("store_data").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.shopConfig) {
+                        shopConfig = { ...defaultShopConfig, ...data.shopConfig };
+                        localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+                    }
+                    if (Array.isArray(data.cakes) && data.cakes.length > 0) {
+                        cakes = data.cakes;
+                        localStorage.setItem('cakes_data', JSON.stringify(cakes));
+                    }
+                    if (Array.isArray(data.coupons)) {
+                        coupons = data.coupons;
+                        localStorage.setItem('coupons_data', JSON.stringify(coupons));
+                    }
+                    applyConfigToUI();
+                } else {
+                    syncStoreSettingsToCloud();
+                }
+            }, (err) => {
+                console.warn("Using local fallback config:", err);
+            });
+        }
+
+        function setMinDeliveryDate() {
+            let today = new Date();
+            let yyyy = today.getFullYear();
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
+            let dd = String(today.getDate()).padStart(2, '0');
+            let minDate = `${yyyy}-${mm}-${dd}`;
+            let dateInput = document.getElementById('deliveryDate');
+            if (dateInput) {
+                dateInput.setAttribute('min', minDate);
+                if (!dateInput.value) dateInput.value = minDate;
+            }
+        }
 
         function playNotificationSound() {
             if(shopConfig.soundAlert === "OFF") return;
@@ -685,6 +768,7 @@
                 document.getElementById('adminModal').style.display = 'block';
                 
                 document.getElementById('adminNewPassInput').value = "";
+                document.getElementById('adminAnnouncementInput').value = shopConfig.announcement || "";
                 document.getElementById('adminSoundToggle').value = shopConfig.soundAlert || "ON";
                 document.getElementById('adminShopName').value = shopConfig.name;
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
@@ -692,14 +776,15 @@
                 document.getElementById('adminUpiId').value = shopConfig.upiId;
                 document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
                 document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
-                document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
-                document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit || 999;
-                document.getElementById('adminMidnightFee').value = shopConfig.midnightFee || 100;
+                document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee ?? 50;
+                document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit ?? 999;
+                document.getElementById('adminMidnightFee').value = shopConfig.midnightFee ?? 100;
                 document.getElementById('adminBlockDate').value = shopConfig.blockedDate || "";
 
-                document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+                document.getElementById('maintBtn').innerText = shopConfig.isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
                 loadOrderHistory();
                 loadAdminCakesList();
+                loadAdminCouponsList();
             } else {
                 alert("Wrong Password!");
             }
@@ -712,35 +797,34 @@
                 return;
             }
             shopConfig.adminPass = newPass;
-            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            syncStoreSettingsToCloud();
             alert("Admin password updated successfully!");
             document.getElementById('adminNewPassInput').value = "";
         }
 
-        function initApp() {
+        function applyConfigToUI() {
             document.getElementById('shopTitleText').innerText = shopConfig.name;
             document.getElementById('pageTitle').innerText = shopConfig.name + " | Premium Bakehouse";
             document.getElementById('instaLinkBtn').href = shopConfig.instagram;
             document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
             document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
             
-            let mFee = shopConfig.midnightFee || 100;
+            let mFee = shopConfig.midnightFee ?? 100;
             document.getElementById('midnightSlotLabel').innerText = `Midnight Special (11:30 PM) [₹${mFee} Extra]`;
-
-            let qrSource = shopConfig.customQrUrl ? shopConfig.customQrUrl : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${shopConfig.upiId || '6001785308@paytm'}&pn=${encodeURIComponent(shopConfig.name)}`;
-            document.getElementById('qrImageDisplay').src = qrSource;
             document.getElementById('qrUpiIdText').innerText = "UPI ID: " + (shopConfig.upiId || "6001785308@paytm");
 
-            if(isMaintenance) {
+            if(shopConfig.isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
             } else {
                 document.getElementById('maintenanceScreen').style.display = 'none';
             }
 
-            if(customAnnouncement) {
-                let banner = document.getElementById('announcementBanner');
-                banner.innerText = "📢 " + customAnnouncement;
+            let banner = document.getElementById('announcementBanner');
+            if(shopConfig.announcement && shopConfig.announcement.trim() !== "") {
+                banner.innerText = "📢 " + shopConfig.announcement;
                 banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
             }
 
             renderCakes();
@@ -749,39 +833,48 @@
             calculatePrice();
         }
 
-        function filterCategory(cat) {
+        function initApp() {
+            setMinDeliveryDate();
+            applyConfigToUI();
+            listenToCloudSettings();
+        }
+
+        function filterCategory(cat, pillEl) {
             currentFilter = cat;
             let pills = document.querySelectorAll('.cat-pill');
             pills.forEach(p => p.classList.remove('active'));
-            event.target.classList.add('active');
+            if (pillEl) pillEl.classList.add('active');
             renderCakes();
         }
 
         function renderCakes() {
             let gridHTML = "";
             let selectHTML = "";
-            let filtered = cakes.filter(c => currentFilter === 'All' || c.category === currentFilter);
-            
-            filtered.forEach((c) => {
-                gridHTML += `
-                    <div class="cake-card">
-                        <div>
-                            <img src="${c.img}" alt="${c.name}" loading="lazy">
-                            <h4>${c.name}</h4>
-                            <p>₹${c.price} ${c.category === 'Add-ons' ? '' : '/ 0.5kg'}</p>
-                        </div>
-                        <button class="btn-add-cart" onclick="addToCart('${c.name}', ${c.price})">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
-                        </button>
-                    </div>`;
-            });
+            let previousFlavor = document.getElementById('flavor').value;
 
-            cakes.forEach((c) => {
-                selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price})</option>`;
+            cakes.forEach((c, idx) => {
+                if (currentFilter === 'All' || c.category === currentFilter) {
+                    gridHTML += `
+                        <div class="cake-card">
+                            <div>
+                                <img src="${c.img}" alt="${c.name}" loading="lazy">
+                                <h4>${c.name}</h4>
+                                <p>₹${c.price} ${(c.category === 'Add-ons' || c.category === 'Cupcakes') ? '' : '/ 0.5kg'}</p>
+                            </div>
+                            <button class="btn-add-cart" onclick="addToCartByIndex(${idx})">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>`;
+                }
+                selectHTML += `<option value="${idx}">${c.name} (₹${c.price})</option>`;
             });
 
             document.getElementById('cakeGridContainer').innerHTML = gridHTML;
-            document.getElementById('flavor').innerHTML = selectHTML;
+            let flavorEl = document.getElementById('flavor');
+            flavorEl.innerHTML = selectHTML;
+            if (previousFlavor && flavorEl.querySelector(`option[value="${previousFlavor}"]`)) {
+                flavorEl.value = previousFlavor;
+            }
             calculatePrice();
         }
 
@@ -802,6 +895,7 @@
         }
 
         function saveShopSettings() {
+            shopConfig.announcement = document.getElementById('adminAnnouncementInput').value.trim();
             shopConfig.soundAlert = document.getElementById('adminSoundToggle').value;
             shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
             shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
@@ -809,9 +903,9 @@
             shopConfig.upiId = document.getElementById('adminUpiId').value.trim() || "6001785308@paytm";
             shopConfig.customQrUrl = document.getElementById('adminCustomQrUrl').value.trim() || "";
 
-            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Shop & Alarm Settings updated successfully!");
-            initApp();
+            syncStoreSettingsToCloud();
+            alert("Shop, Banner & QR Settings saved to Cloud!");
+            applyConfigToUI();
         }
 
         function saveDeliveryConfig() {
@@ -819,67 +913,114 @@
             shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
             shopConfig.freeDeliveryLimit = parseFloat(document.getElementById('adminFreeDeliveryLimit').value) || 999;
             shopConfig.midnightFee = parseFloat(document.getElementById('adminMidnightFee').value) || 100;
-            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Geo-Delivery Rules updated successfully!");
-            initApp();
+            syncStoreSettingsToCloud();
+            alert("Geo-Delivery Rules updated in Cloud!");
+            applyConfigToUI();
         }
 
         function saveBlockDate() {
             shopConfig.blockedDate = document.getElementById('adminBlockDate').value;
-            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Date blocked successfully!");
+            syncStoreSettingsToCloud();
+            alert("Blocked date updated in Cloud!");
         }
 
         function checkHolidayDate() {
             let selectedDate = document.getElementById('deliveryDate').value;
             let msg = document.getElementById('holidayMsg');
+            let minDate = document.getElementById('deliveryDate').getAttribute('min');
+
             if(shopConfig.blockedDate && selectedDate === shopConfig.blockedDate) {
                 msg.innerText = "❌ Sorry! We are closed or fully booked on this date. Please choose another date.";
                 document.getElementById('deliveryDate').value = "";
+            } else if(minDate && selectedDate < minDate) {
+                msg.innerText = "❌ Past dates are not allowed. Please pick today or a future date.";
+                document.getElementById('deliveryDate').value = minDate;
             } else {
                 msg.innerText = "";
             }
+        }
+
+        function isPincodeDeliverable(pin) {
+            if (!pin || pin.length !== 6) return false;
+            let allowed = (shopConfig.pincodes || "").split(',').map(p => p.trim());
+            return allowed.includes(pin);
         }
 
         function checkPincode() {
             let pin = document.getElementById('pincodeInput').value.trim();
             let msg = document.getElementById('pincodeMsg');
             if(pin.length === 6) {
-                let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
-                if(allowed.includes(pin)) {
+                if(isPincodeDeliverable(pin)) {
                     msg.style.color = "#22c55e";
                     msg.innerText = "✅ Smart Geo-Check: Delivery available in your area!";
                 } else {
                     msg.style.color = "#ef4444";
                     msg.innerText = "❌ Delivery not available for this PIN code.";
                 }
+            } else if (pin.length > 0) {
+                msg.style.color = "#fbbf24";
+                msg.innerText = "⏳ Enter full 6-digit PIN code...";
             } else {
                 msg.innerText = "";
             }
             calculatePrice();
         }
 
-        function addToCart(name, price) {
-            let existing = cart.find(item => item.name === name);
+        function addToCartByIndex(idx) {
+            let itemObj = cakes[idx];
+            if (!itemObj) return;
+            let existing = cart.find(item => item.name === itemObj.name);
             if(existing) {
                 existing.qty += 1;
+                existing.price = itemObj.price;
+                existing.category = itemObj.category;
             } else {
-                cart.push({ name: name, price: price, qty: 1 });
+                cart.push({ name: itemObj.name, price: itemObj.price, category: itemObj.category, qty: 1 });
             }
             localStorage.setItem('cart_data', JSON.stringify(cart));
             updateCartUI();
-            alert(name + " added to cart!");
+            calculatePrice();
+            showLiveToast(`🛒 ${itemObj.name} added to cart!`);
+        }
+
+        function clearCartItems() {
+            cart = [];
+            localStorage.removeItem('cart_data');
+            updateCartUI();
+            calculatePrice();
         }
 
         function updateCartUI() {
             let totalItems = 0;
-            let totalPriceCalc = 0;
+            let weightSelect = document.getElementById('weight');
+            let multiplier = 1;
+            if (weightSelect && weightSelect.options.length) {
+                multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
+            }
+
+            let subtotalCalc = 0;
             cart.forEach(item => {
                 totalItems += item.qty;
-                totalPriceCalc += item.price * item.qty;
+                let isFixedPriceItem = (item.category === 'Add-ons' || item.category === 'Cupcakes');
+                let itemMult = isFixedPriceItem ? 1 : multiplier;
+                subtotalCalc += Math.round(item.price * itemMult * item.qty);
             });
+
             document.getElementById('cartCountBadge').innerText = totalItems + (totalItems === 1 ? " Item" : " Items");
-            document.getElementById('cartTotalBadge').innerText = "₹" + totalPriceCalc;
+            document.getElementById('cartTotalBadge').innerText = "₹" + subtotalCalc;
+
+            let cartBanner = document.getElementById('cartActiveBanner');
+            let flavorSelect = document.getElementById('flavor');
+            if (cart.length > 0) {
+                cartBanner.style.display = 'flex';
+                document.getElementById('cartActiveText').innerText = `🛍️ Cart Active (${totalItems} items selected)`;
+                flavorSelect.disabled = true;
+                flavorSelect.style.opacity = "0.5";
+            } else {
+                cartBanner.style.display = 'none';
+                flavorSelect.disabled = false;
+                flavorSelect.style.opacity = "1";
+            }
         }
 
         function renderCartItems() {
@@ -894,8 +1035,8 @@
                 html += `
                     <div class="cart-item-row">
                         <div>
-                            <b>${item.name}</b><br>
-                            <span style="font-size: 0.75rem; color: #f472b6;">₹${item.price} × ${item.qty} = ₹${itemTotal}</span>
+                            <b>${item.name}</b> <span style="font-size:0.7rem; color:#94a3b8;">(${item.category || 'Cake'})</span><br>
+                            <span style="font-size: 0.75rem; color: #f472b6;">Base: ₹${item.price} × ${item.qty} = ₹${itemTotal}</span>
                         </div>
                         <div class="cart-controls">
                             <button onclick="changeQty(${index}, -1)">-</button>
@@ -916,6 +1057,7 @@
             localStorage.setItem('cart_data', JSON.stringify(cart));
             updateCartUI();
             renderCartItems();
+            calculatePrice();
         }
 
         function removeFromCart(index) {
@@ -923,14 +1065,12 @@
             localStorage.setItem('cart_data', JSON.stringify(cart));
             updateCartUI();
             renderCartItems();
+            calculatePrice();
         }
 
         function proceedToCheckout() {
             closeCartModal();
-            if(cart.length > 0) {
-                document.getElementById('flavor').value = cart[0].name;
-            }
-            window.scrollTo({ top: document.getElementById('flavor').offsetTop - 50, behavior: 'smooth' });
+            document.getElementById('checkoutSection').scrollIntoView({ behavior: 'smooth' });
         }
 
         function applyCoupon() {
@@ -962,23 +1102,37 @@
             }
         }
 
+        function updateDynamicQrCode(amount) {
+            let upiId = shopConfig.upiId || '6001785308@paytm';
+            let shopName = shopConfig.name || 'Priyatam Cake Studio';
+            let upiUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shopName)}&am=${amount}&cu=INR`;
+            let qrSource = shopConfig.customQrUrl
+                ? shopConfig.customQrUrl
+                : `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUri)}`;
+            document.getElementById('qrImageDisplay').src = qrSource;
+        }
+
         function calculatePrice() {
             let flavorSelect = document.getElementById('flavor');
             let weightSelect = document.getElementById('weight');
             
             if(!flavorSelect.options.length) return;
 
-            let selectedOption = flavorSelect.options[flavorSelect.selectedIndex];
-            let basePrice = parseFloat(selectedOption.getAttribute('data-price')) || 500;
             let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
-
-            let total = basePrice * multiplier;
+            let total = 0;
 
             if(cart.length > 0) {
-                total = 0;
                 cart.forEach(item => {
-                    total += (item.price * multiplier * item.qty);
+                    let isFixedPrice = (item.category === 'Add-ons' || item.category === 'Cupcakes');
+                    let itemMult = isFixedPrice ? 1 : multiplier;
+                    total += (item.price * itemMult * item.qty);
                 });
+            } else {
+                let selectedIdx = parseInt(flavorSelect.value) || 0;
+                let selectedCake = cakes[selectedIdx] || cakes[0];
+                let isFixedPrice = (selectedCake.category === 'Add-ons' || selectedCake.category === 'Cupcakes');
+                let itemMult = isFixedPrice ? 1 : multiplier;
+                total = selectedCake.price * itemMult;
             }
 
             if(appliedDiscount > 0) {
@@ -987,48 +1141,69 @@
 
             let deliveryTimeVal = document.getElementById('deliveryTime').value;
             if(deliveryTimeVal.includes("Midnight")) {
-                total += (shopConfig.midnightFee || 100);
+                total += (shopConfig.midnightFee ?? 100);
             }
 
-            let pin = document.getElementById('pincodeInput').value.trim();
-            let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
+            let limit = shopConfig.freeDeliveryLimit ?? 999;
+            let delFee = shopConfig.deliveryFee ?? 50;
             let feeStatusText = "Final Payable Amount";
 
-            if(pin.length === 6 && allowed.includes(pin)) {
-                let limit = shopConfig.freeDeliveryLimit || 999;
-                if(total >= limit) {
-                    feeStatusText = "Final Payable Amount (🎉 Free Delivery Applied!)";
-                } else {
-                    total += (shopConfig.deliveryFee || 50);
-                    feeStatusText = `Final Payable Amount (Includes ₹${shopConfig.deliveryFee || 50} Delivery Fee)`;
-                }
+            if(total >= limit) {
+                feeStatusText = "Final Payable Amount (🎉 Free Delivery Applied!)";
+            } else {
+                total += delFee;
+                feeStatusText = `Final Payable Amount (Includes ₹${delFee} Delivery Fee)`;
             }
+
             document.getElementById('deliveryFeeStatusText').innerText = feeStatusText;
 
-            let finalTotal = Math.round(total);
-            document.getElementById('totalPrice').innerText = "₹" + finalTotal;
+            currentFinalPayable = Math.round(total);
+            document.getElementById('totalPrice').innerText = "₹" + currentFinalPayable;
+
+            updateCartUI();
+            updateDynamicQrCode(currentFinalPayable);
         }
 
         function sendWhatsAppOrder() {
-            let flavor = document.getElementById('flavor').value;
+            let flavorSelect = document.getElementById('flavor');
+            let selectedCake = cakes[parseInt(flavorSelect.value) || 0] || { name: "Custom Cake" };
             let weight = document.getElementById('weight').value;
-            let cakeText = document.getElementById('cakeText').value || "None";
-            let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
+            let cakeText = document.getElementById('cakeText').value.trim() || "None";
+            let deliveryDate = document.getElementById('deliveryDate').value;
             let deliveryTime = document.getElementById('deliveryTime').value;
+            let pin = document.getElementById('pincodeInput').value.trim();
             let paymentMethod = document.getElementById('paymentMethod').value;
             let upiTxnId = document.getElementById('upiTxnId').value.trim();
             let custName = document.getElementById('custName').value.trim();
             let custPhone = document.getElementById('custPhone').value.trim();
             let custAddress = document.getElementById('custAddress').value.trim();
-            let totalPrice = document.getElementById('totalPrice').innerText;
+            let totalPrice = "₹" + currentFinalPayable;
 
-            if(!custName || !custPhone || !custAddress) {
-                alert("Please fill in your Name, Mobile Number and Delivery Address!");
+            if(!deliveryDate) {
+                alert("Please select a valid Delivery Date!");
                 return;
             }
 
-            if(paymentMethod === 'Online' && !upiTxnId) {
-                alert("Please enter your UPI Transaction / UTR Number for online payment verification!");
+            if(!isPincodeDeliverable(pin)) {
+                alert("Please enter a valid 6-digit deliverable PIN Code for your area!");
+                document.getElementById('pincodeInput').focus();
+                return;
+            }
+
+            if(!custName || !custAddress) {
+                alert("Please fill in your Full Name and Delivery Address!");
+                return;
+            }
+
+            if(!/^\d{10}$/.test(custPhone)) {
+                alert("Please enter a valid 10-digit Mobile Number!");
+                document.getElementById('custPhone').focus();
+                return;
+            }
+
+            if(paymentMethod === 'Online' && upiTxnId.length < 6) {
+                alert("Please enter your valid UPI Transaction / UTR Number for online payment verification!");
+                document.getElementById('upiTxnId').focus();
                 return;
             }
 
@@ -1036,7 +1211,7 @@
             if(cart.length > 0) {
                 cartSummary = cart.map(i => `${i.name} (${i.qty} qty)`).join(', ');
             } else {
-                cartSummary = flavor;
+                cartSummary = selectedCake.name;
             }
 
             playNotificationSound();
@@ -1052,11 +1227,13 @@
                 weight: weight,
                 message: cakeText,
                 dateTime: `${deliveryDate} (${deliveryTime})`,
+                pincode: pin,
                 address: custAddress,
                 price: totalPrice,
-                payment: paymentMethod,
+                payment: paymentMethod === 'Online' ? `Online (UTR: ${upiTxnId})` : 'COD',
                 status: "Received",
-                timestamp: new Date().toLocaleString()
+                timestamp: new Date().toLocaleString(),
+                createdAt: Date.now()
             };
 
             // Save order to Firebase Firestore Cloud Database
@@ -1076,23 +1253,27 @@
             document.getElementById('invWeight').innerText = weight;
             document.getElementById('invMessage').innerText = cakeText;
             document.getElementById('invDateTime').innerText = `${deliveryDate} | ${deliveryTime}`;
-            document.getElementById('invAddress').innerText = custAddress;
-            document.getElementById('invPayment').innerText = paymentMethod;
+            document.getElementById('invAddress').innerText = `${custAddress} (PIN: ${pin})`;
+            document.getElementById('invPayment').innerText = orderData.payment;
             document.getElementById('invTotal').innerText = totalPrice;
             document.getElementById('invoiceModal').style.display = 'flex';
 
             let message = `🍰 *NEW CAKE ORDER - ${shopConfig.name}* 🍰\n\n` +
                           `*Order ID:* ${orderId}\n` +
-                          `*Items/Cart:* ${cartSummary}\n` +
-                          `*Weight Multiplier:* ${weight}\n` +
+                          `*Items:* ${cartSummary}\n` +
+                          `*Selected Cake Weight:* ${weight}\n` +
                           `*Message on Cake:* ${cakeText}\n` +
                           `*Delivery Date:* ${deliveryDate} (${deliveryTime})\n` +
-                          `*Payment Mode:* ${paymentMethod} ${paymentMethod === 'Online' ? '(Txn ID: '+upiTxnId+')' : ''}\n` +
+                          `*PIN Code:* ${pin}\n` +
+                          `*Payment Mode:* ${orderData.payment}\n` +
                           `*Coupon Applied:* ${appliedCouponCode ? appliedCouponCode + ' ('+appliedDiscount+'% off)' : 'None'}\n` +
                           `*Total Payable:* ${totalPrice}\n\n` +
                           `*Customer Name:* ${custName}\n` +
                           `*Mobile:* ${custPhone}\n` +
                           `*Delivery Address:* ${custAddress}`;
+
+            // Clear Cart after successful order
+            clearCartItems();
 
             let encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/91${shopConfig.whatsapp}?text=${encodedMessage}`, '_blank');
@@ -1107,17 +1288,23 @@
                 return;
             }
 
+            resultBox.innerHTML = `<p style="color: #94a3b8; text-align: center;">Searching orders...</p>`;
+
             db.collection("orders").where("phone", "==", phone).get().then((querySnapshot) => {
                 if(querySnapshot.empty) {
                     resultBox.innerHTML = `<p style="color: #ef4444; text-align: center;">No orders found for this mobile number.</p>`;
                     return;
                 }
+                let ordersArr = [];
+                querySnapshot.forEach(doc => ordersArr.push(doc.data()));
+                ordersArr.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
                 let html = "";
-                querySnapshot.forEach((doc) => {
-                    let o = doc.data();
+                ordersArr.forEach((o) => {
                     html += `<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 0.8rem;">
                         <b>Order ID:</b> ${o.id}<br>
                         <b>Item:</b> ${o.flavor}<br>
+                        <b>Delivery:</b> ${o.dateTime || ''}<br>
                         <b>Total:</b> ${o.price}<br>
                         <b>Status:</b> <span style="color: #22c55e; font-weight: bold;">${o.status}</span>
                     </div>`;
@@ -1129,11 +1316,11 @@
         }
 
         function toggleMaintenance() {
-            isMaintenance = !isMaintenance;
-            localStorage.setItem('site_maintenance', isMaintenance);
-            document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
-            alert("Maintenance mode is now " + (isMaintenance ? "ON" : "OFF"));
-            initApp();
+            shopConfig.isMaintenance = !shopConfig.isMaintenance;
+            document.getElementById('maintBtn').innerText = shopConfig.isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+            syncStoreSettingsToCloud();
+            alert("Maintenance mode is now " + (shopConfig.isMaintenance ? "ON" : "OFF"));
+            applyConfigToUI();
         }
 
         function addNewCake() {
@@ -1149,12 +1336,12 @@
             if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
 
             cakes.push({ name: name, category: category, price: price, img: img });
-            localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            alert("New Product / Add-on added successfully!");
+            syncStoreSettingsToCloud();
+            alert("New Product / Add-on added to Cloud!");
             document.getElementById('newCakeName').value = "";
             document.getElementById('newCakePrice').value = "";
             document.getElementById('newCakeImg').value = "";
-            initApp();
+            applyConfigToUI();
             loadAdminCakesList();
         }
 
@@ -1173,8 +1360,8 @@
         function deleteCake(idx) {
             if(confirm("Are you sure you want to remove this item?")) {
                 cakes.splice(idx, 1);
-                localStorage.setItem('cakes_data', JSON.stringify(cakes));
-                initApp();
+                syncStoreSettingsToCloud();
+                applyConfigToUI();
                 loadAdminCakesList();
             }
         }
@@ -1183,42 +1370,72 @@
             let code = document.getElementById('newCouponCode').value.trim().toUpperCase();
             let disc = parseInt(document.getElementById('newCouponDisc').value);
 
-            if(!code || isNaN(disc)) {
-                alert("Please enter valid coupon code and discount %!");
+            if(!code || isNaN(disc) || disc <= 0 || disc > 100) {
+                alert("Please enter a valid coupon code and discount % (1-100)!");
                 return;
             }
 
             coupons.push({ code: code, discount: disc });
-            localStorage.setItem('coupons_data', JSON.stringify(coupons));
-            alert("Coupon added successfully!");
+            syncStoreSettingsToCloud();
+            alert("Coupon added to Cloud!");
             document.getElementById('newCouponCode').value = "";
             document.getElementById('newCouponDisc').value = "";
+            loadAdminCouponsList();
+        }
+
+        function loadAdminCouponsList() {
+            let container = document.getElementById('adminCouponsList');
+            if (!container) return;
+            if (coupons.length === 0) {
+                container.innerHTML = `<p style="color:#64748b; text-align:center;">No active coupons.</p>`;
+                return;
+            }
+            let html = "";
+            coupons.forEach((c, idx) => {
+                html += `<div class="manage-list-item">
+                    <span><b>${c.code}</b> (${c.discount}% OFF)</span>
+                    <button onclick="deleteCoupon(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteCoupon(idx) {
+            coupons.splice(idx, 1);
+            syncStoreSettingsToCloud();
+            loadAdminCouponsList();
         }
 
         function loadOrderHistory() {
             let container = document.getElementById('orderHistoryContainer');
-            db.collection("orders").orderBy("timestamp", "desc").get().then((querySnapshot) => {
+            db.collection("orders").get().then((querySnapshot) => {
                 if(querySnapshot.empty) {
                     container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet in cloud database.</p>`;
                     return;
                 }
-                let html = "";
+                let ordersList = [];
                 querySnapshot.forEach((doc) => {
-                    let o = doc.data();
-                    let docId = doc.id;
+                    ordersList.push({ docId: doc.id, ...doc.data() });
+                });
+                // Sort by numeric timestamp (newest first)
+                ordersList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                let html = "";
+                ordersList.forEach((o) => {
                     let statusColor = o.status === 'Delivered' ? '#22c55e' : (o.status === 'Baking' ? '#38bdf8' : '#fbbf24');
                     html += `<div class="order-item">
                         <b>${o.id} - ${o.name}</b> (${o.phone})<br>
-                        Ordered: ${o.flavor} (${o.price})<br>
+                        Ordered: ${o.flavor} | <b>${o.price}</b><br>
+                        Delivery: ${o.dateTime || 'Standard'}<br>
                         Status: <span style="color: ${statusColor}; font-weight: bold;">${o.status}</span>
                         <div style="display:flex; gap:6px; margin-top:6px;">
-                            <select onchange="updateOrderStatus('${docId}', this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
+                            <select onchange="updateOrderStatus('${o.docId}', this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
                                 <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
                                 <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
                                 <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
                                 <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
                             </select>
-                            <button onclick="sendWhatsAppStatusBot('${o.phone}', '${o.id}', '${o.status}')" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Bot"><i class="fab fa-whatsapp"></i> Bot</button>
+                            <button onclick="sendWhatsAppStatusBot('${o.phone}', '${o.id}', '${o.status}')" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Update"><i class="fab fa-whatsapp"></i> Update</button>
                         </div>
                     </div>`;
                 });
@@ -1233,25 +1450,28 @@
                 status: newStatus
             }).then(() => {
                 loadOrderHistory();
-                alert("Order status updated to: " + newStatus);
+                showLiveToast("✅ Status updated to: " + newStatus);
             }).catch((error) => {
                 alert("Error updating status.");
             });
         }
 
         function sendWhatsAppStatusBot(phone, orderId, status) {
-            let botMsg = `Hello, update regarding your order *${orderId}* from *${shopConfig.name}*:\nYour order status is now: *${status}* 🍰.\nThank you for choosing us!`;
+            let botMsg = `Hello! Update regarding your order *${orderId}* from *${shopConfig.name}*:\nYour order status is now: *${status}* 🍰.\nThank you for choosing us!`;
             window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(botMsg)}`, '_blank');
         }
 
         function clearOrders() {
-            if(confirm("Are you sure you want to clear cloud orders history?")) {
+            if(confirm("Are you sure you want to permanently delete all cloud order history?")) {
                 db.collection("orders").get().then((querySnapshot) => {
+                    let batch = db.batch();
                     querySnapshot.forEach((doc) => {
-                        db.collection("orders").doc(doc.id).delete();
+                        batch.delete(doc.ref);
                     });
+                    return batch.commit();
+                }).then(() => {
                     loadOrderHistory();
-                    alert("Cloud orders cleared.");
+                    alert("Cloud orders cleared successfully.");
                 });
             }
         }
