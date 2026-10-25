@@ -11,7 +11,7 @@
         
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31103f 100%);
-            color: #f8fafc; min-height: 100vh; padding-bottom: 70px; overflow-x: hidden;
+            color: #f8fafc; min-height: 100vh; padding-bottom: 90px; overflow-x: hidden;
         }
 
         .bg-orb-1 {
@@ -77,20 +77,36 @@
         .cake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .cake-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px; overflow: hidden; text-align: center; padding: 10px; cursor: pointer; transition: all 0.3s ease;
+            border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;
         }
         .cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.1); transform: translateY(-3px); }
         .cake-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
-        .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
-        .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; }
+        .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+        .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; margin-bottom: 8px; }
+        .btn-add-cart {
+            background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
+            padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s;
+        }
+        .btn-add-cart:hover { opacity: 0.9; transform: scale(1.02); }
 
-        /* Testimonials Section Styles */
+        /* Floating Cart Bar */
+        .floating-cart {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white;
+            padding: 12px 24px; border-radius: 35px; display: flex; align-items: center; justify-content: space-between;
+            width: 90%; max-width: 440px; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
+            z-index: 99; cursor: pointer; transition: 0.3s;
+        }
+        .floating-cart:hover { transform: translateX(-50%) scale(1.02); }
+        .cart-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; }
+        .cart-badge { background: #fff; color: #ec4899; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+
+        /* Reviews Section */
         .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
         .review-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px; padding: 14px; transition: 0.3s;
         }
-        .review-card:hover { border-color: rgba(244, 114, 182, 0.3); background: rgba(255, 255, 255, 0.05); }
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .review-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
         .review-stars { color: #fbbf24; font-size: 0.75rem; }
@@ -129,43 +145,42 @@
         .btn-order:active { transform: scale(0.97); }
 
         .floating-support {
-            position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white;
-            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 30px; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5);
-            z-index: 100; text-decoration: none; transition: 0.3s;
+            position: fixed; bottom: 85px; right: 20px; background: #25D366; color: white;
+            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5);
+            z-index: 90; text-decoration: none; transition: 0.3s;
         }
         .floating-support:hover { transform: scale(1.1); }
 
-        /* MODALS */
-        #passwordModal, #adminModal {
+        /* MODALS (Cart, Password, Admin) */
+        #cartModal, #passwordModal, #adminModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
             z-index: 10000; overflow-y: auto; padding: 30px 15px;
         }
-        #passwordModal { align-items: center; justify-content: center; display: none; }
+        #passwordModal, #cartModal { align-items: center; justify-content: center; display: none; }
 
-        .pass-box {
+        .modal-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a); border: 2px solid rgba(244, 114, 182, 0.4);
-            border-radius: 24px; max-width: 360px; width: 100%; padding: 25px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            border-radius: 24px; max-width: 420px; width: 100%; padding: 24px; color: #fff;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7); max-height: 90vh; overflow-y: auto;
         }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .modal-header h3 { font-family: 'Outfit'; font-size: 1.3rem; color: #f472b6; }
+        .close-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 0.85rem; }
+        .cart-controls { display: flex; align-items: center; gap: 8px; }
+        .cart-controls button { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
         .admin-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a); border: 2px solid rgba(244, 114, 182, 0.4);
             border-radius: 28px; max-width: 480px; margin: 20px auto; padding: 28px; color: #fff;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
         }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
-        .admin-header h2 { font-family: 'Outfit'; font-size: 1.4rem; color: #f472b6; }
-        
         .btn-admin-act {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
             padding: 14px 18px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%;
-        }
-        .admin-close { 
-            background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; 
-            width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
         }
 
         .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 200px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
@@ -190,7 +205,6 @@
 
     <header>
         <div class="badge">✨ Freshly Baked Everyday</div>
-        <!-- 3 Taps on this Title will open Hidden Admin Panel -->
         <h1 onclick="handleTitleClick()">Priyatam Cake Studio</h1>
         <p>Order Handcrafted Custom Cakes in Seconds</p>
         
@@ -208,21 +222,21 @@
         
         <!-- Popular Cakes Gallery Grid -->
         <div class="glass-card">
-            <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Flavors</h3>
+            <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Menu & Cart</h3>
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
 
-        <!-- Customer Testimonials / Reviews Section -->
+        <!-- Customer Testimonials Section -->
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-star" style="color: #fbbf24;"></i> Happy Customers</h3>
             <div class="reviews-container" id="reviewsContainer"></div>
         </div>
 
-        <!-- Customization Form Card -->
+        <!-- Checkout / Custom Order Form Card -->
         <div class="glass-card">
-            <h2 class="section-title"><i class="fas fa-edit"></i> Custom Order Form</h2>
+            <h2 class="section-title"><i class="fas fa-edit"></i> Secure Checkout Form</h2>
 
-            <label>Selected Flavor</label>
+            <label>Selected Items / Flavor</label>
             <select id="flavor" onchange="calculatePrice()"></select>
 
             <label>Select Weight</label>
@@ -234,7 +248,7 @@
             </select>
 
             <label>Message on Cake</label>
-            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Rahul!">
+            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!">
 
             <label>Delivery Date</label>
             <input type="date" id="deliveryDate">
@@ -247,6 +261,28 @@
                 <option value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
             </select>
 
+            <label>Coupon Code (Optional)</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="couponInput" placeholder="e.g. CAKE10" style="text-transform: uppercase;">
+                <button type="button" onclick="applyCoupon()" style="background: #3b82f6; border: none; color: #fff; padding: 0 16px; border-radius: 12px; font-weight: 700; cursor: pointer;">Apply</button>
+            </div>
+            <p id="couponMsg" style="font-size: 0.75rem; color: #38bdf8; margin-top: 4px;"></p>
+
+            <label>Payment Method</label>
+            <select id="paymentMethod" onchange="togglePaymentQR()">
+                <option value="COD">Cash on Delivery (Pay on Delivery)</option>
+                <option value="Online">Online UPI QR Code Payment (Advance)</option>
+            </select>
+
+            <!-- UPI QR Box (Hidden by default) -->
+            <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
+                <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6001785308@paytm&pn=PriyatamCakeStudio" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px;">
+                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;">UPI ID: 6001785308@paytm</p>
+                <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
+                <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
+            </div>
+
             <label>Your Name</label>
             <input type="text" id="custName" placeholder="Enter your full name">
 
@@ -254,27 +290,53 @@
             <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
 
             <div class="price-box">
-                <p>Estimated Total Amount</p>
+                <p>Final Payable Amount</p>
                 <span id="totalPrice">₹500</span>
             </div>
 
             <button class="btn-order" onclick="sendWhatsAppOrder()">
-                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Send WhatsApp Order
+                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Complete WhatsApp Order
             </button>
         </div>
 
         <p class="footer-text">🔒 Secure Direct Ordering & Customer Support</p>
     </div>
 
+    <!-- Floating Cart Bar -->
+    <div class="floating-cart" onclick="openCartModal()">
+        <div class="cart-left">
+            <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
+            <span>View Cart Items</span>
+        </div>
+        <div>
+            <span class="cart-badge" id="cartCountBadge">0 Items</span>
+            <span style="font-weight: 800; margin-left: 6px;" id="cartTotalBadge">₹0</span>
+        </div>
+    </div>
+
     <!-- Floating WhatsApp Support Button -->
-    <a href="https://wa.me/916001785308?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support">
+    <a href="https://wa.me/916001785308?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support" title="Support Chat">
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <!-- CART MODAL -->
+    <div id="cartModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>🛍️ Your Shopping Cart</h3>
+                <button class="close-btn" onclick="closeCartModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+                <p style="color: #94a3b8; text-align: center;">Your cart is empty.</p>
+            </div>
+            <button class="btn-admin-act" onclick="proceedToCheckout()" style="background: linear-gradient(135deg, #22c55e, #16a34a); margin-top: 0;">Proceed to Checkout</button>
+        </div>
+    </div>
+
     <!-- PASSWORD MODAL -->
     <div id="passwordModal">
-        <div class="pass-box">
-            <h3 style="color: #f472b6; margin-bottom: 10px; font-family: 'Outfit';">🔒 Admin Access</h3>
+        <div class="modal-box" style="max-width: 360px; text-align: center;">
+            <h3 style="margin-bottom: 10px;">🔒 Admin Access</h3>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Enter secret password to continue</p>
             <input type="password" id="adminPassInput" placeholder="Password (admin123)" style="margin-bottom: 15px; text-align: center;">
             <div style="display: flex; gap: 10px;">
@@ -284,12 +346,12 @@
         </div>
     </div>
 
-    <!-- HIDDEN ADMIN PANEL MODAL -->
+    <!-- ADMIN PANEL MODAL -->
     <div id="adminModal">
         <div class="admin-box">
-            <div class="admin-header">
-                <h2>⚙️ Shop Admin Control</h2>
-                <button class="admin-close" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <h3>⚙️ Shop Admin Control</h3>
+                <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
             
             <label>1-Click Maintenance Mode Toggle</label>
@@ -299,24 +361,29 @@
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
 
-            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-plus-circle"></i> Add New Product / Change Photo</h3>
+            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-plus-circle"></i> Add New Product / Cake</h3>
             <label>Cake Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Pineapple Delight">
-            
             <label>Base Price (₹ / 0.5kg)</label>
             <input type="number" id="newCakePrice" placeholder="450">
-
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
+            <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
-            <button class="btn-admin-act" onclick="addNewCake()">Add / Update Product</button>
+            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
+            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
+            <label>Coupon Code</label>
+            <input type="text" id="newCouponCode" placeholder="e.g. FESTIVE20" style="text-transform: uppercase;">
+            <label>Discount Percentage (%)</label>
+            <input type="number" id="newCouponDisc" placeholder="15">
+            <button class="btn-admin-act" onclick="addNewCoupon()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Add Coupon</button>
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
             <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-star"></i> Add Customer Review</h3>
             <label>Customer Name</label>
             <input type="text" id="reviewName" placeholder="e.g. Rahul Sharma">
             <label>Review Comment</label>
-            <input type="text" id="reviewText" placeholder="e.g. Super fresh and delicious cake!">
+            <input type="text" id="reviewText" placeholder="e.g. Super fresh and delicious!">
             <label>Rating (1 to 5 Stars)</label>
             <input type="number" id="reviewRating" min="1" max="5" value="5">
             <button class="btn-admin-act" onclick="addNewReview()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Add Review</button>
@@ -324,7 +391,7 @@
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
             <label>Announcement Notice Message</label>
             <input type="text" id="announcementInput" placeholder="Enter announcement text...">
-            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Update Announcement</button>
+            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: linear-gradient(135deg, #10b981, #059669);">Update Announcement</button>
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
             <label>📋 Received Customer Orders Log</label>
@@ -348,10 +415,20 @@
             { name: "Amit Gogoi", text: "Ordered a midnight surprise cake, delivery was right on time and quality is top notch!", rating: 5 }
         ];
 
+        let defaultCoupons = [
+            { code: "CAKE10", discount: 10 },
+            { code: "PRIYATAM20", discount: 20 }
+        ];
+
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
         let reviews = JSON.parse(localStorage.getItem('reviews_data')) || defaultReviews;
+        let coupons = JSON.parse(localStorage.getItem('coupons_data')) || defaultCoupons;
+        let cart = JSON.parse(localStorage.getItem('cart_data')) || [];
+        
         let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
         let customAnnouncement = localStorage.getItem('site_announcement') || "";
+        let appliedDiscount = 0;
+        let appliedCouponCode = "";
 
         let clickCount = 0;
         let clickTimer = null;
@@ -372,9 +449,10 @@
             document.getElementById('passwordModal').style.display = 'flex';
         }
 
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
+        function openCartModal() { document.getElementById('cartModal').style.display = 'flex'; renderCartItems(); }
+        function closeCartModal() { document.getElementById('cartModal').style.display = 'none'; }
+        function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
 
         function verifyPassword() {
             let pass = document.getElementById('adminPassInput').value;
@@ -386,10 +464,6 @@
             } else {
                 alert("Wrong Password!");
             }
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').style.display = 'none';
         }
 
         function initApp() {
@@ -405,15 +479,20 @@
                 banner.style.display = 'block';
             }
 
-            // Render Cakes Grid
+            // Render Cakes Grid with Add to Cart button
             let gridHTML = "";
             let selectHTML = "";
             cakes.forEach((c) => {
                 gridHTML += `
-                    <div class="cake-card" onclick="selectCake('${c.name}', ${c.price})">
-                        <img src="${c.img}" alt="${c.name}">
-                        <h4>${c.name}</h4>
-                        <p>₹${c.price} / 0.5kg</p>
+                    <div class="cake-card">
+                        <div>
+                            <img src="${c.img}" alt="${c.name}">
+                            <h4>${c.name}</h4>
+                            <p>₹${c.price} / 0.5kg</p>
+                        </div>
+                        <button class="btn-add-cart" onclick="addToCart('${c.name}', ${c.price})">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
                     </div>`;
                 selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price} / 0.5kg)</option>`;
             });
@@ -435,14 +514,114 @@
             });
             document.getElementById('reviewsContainer').innerHTML = reviewsHTML;
 
+            updateCartUI();
             calculatePrice();
         }
 
-        function selectCake(flavorName, price) {
-            let flavorSelect = document.getElementById('flavor');
-            flavorSelect.value = flavorName;
-            calculatePrice();
+        function addToCart(name, price) {
+            let existing = cart.find(item => item.name === name);
+            if(existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name: name, price: price, qty: 1 });
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            alert(name + " added to cart!");
+        }
+
+        function updateCartUI() {
+            let totalItems = 0;
+            let totalPriceCalc = 0;
+            cart.forEach(item => {
+                totalItems += item.qty;
+                totalPriceCalc += item.price * item.qty;
+            });
+            document.getElementById('cartCountBadge').innerText = totalItems + (totalItems === 1 ? " Item" : " Items");
+            document.getElementById('cartTotalBadge').innerText = "₹" + totalPriceCalc;
+        }
+
+        function renderCartItems() {
+            let container = document.getElementById('cartItemsList');
+            if(cart.length === 0) {
+                container.innerHTML = `<p style="color: #94a3b8; text-align: center;">Your cart is empty.</p>`;
+                return;
+            }
+            let html = "";
+            let subtotal = 0;
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                subtotal += itemTotal;
+                html += `
+                    <div class="cart-item-row">
+                        <div>
+                            <b>${item.name}</b><br>
+                            <span style="font-size: 0.75rem; color: #f472b6;">₹${item.price} × ${item.qty} = ₹${itemTotal}</span>
+                        </div>
+                        <div class="cart-controls">
+                            <button onclick="changeQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)">+</button>
+                            <button onclick="removeFromCart(${index})" style="background: rgba(239,68,68,0.3); color:#f87171;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if(cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            renderCartItems();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            renderCartItems();
+        }
+
+        function proceedToCheckout() {
+            closeCartModal();
+            if(cart.length > 0) {
+                // Set first item in cart as selected flavor dropdown if available
+                document.getElementById('flavor').value = cart[0].name;
+            }
             window.scrollTo({ top: document.getElementById('flavor').offsetTop - 50, behavior: 'smooth' });
+        }
+
+        function applyCoupon() {
+            let code = document.getElementById('couponInput').value.trim().toUpperCase();
+            let msg = document.getElementById('couponMsg');
+            let found = coupons.find(c => c.code === code);
+
+            if(found) {
+                appliedDiscount = found.discount;
+                appliedCouponCode = found.code;
+                msg.style.color = "#22c55e";
+                msg.innerText = `✅ Coupon '${found.code}' applied! ${found.discount}% OFF`;
+            } else {
+                appliedDiscount = 0;
+                appliedCouponCode = "";
+                msg.style.color = "#ef4444";
+                msg.innerText = "❌ Invalid Coupon Code";
+            }
+            calculatePrice();
+        }
+
+        function togglePaymentQR() {
+            let method = document.getElementById('paymentMethod').value;
+            let qrBox = document.getElementById('upiQrBox');
+            if(method === 'Online') {
+                qrBox.style.display = 'block';
+            } else {
+                qrBox.style.display = 'none';
+            }
         }
 
         function calculatePrice() {
@@ -455,8 +634,22 @@
             let basePrice = parseFloat(selectedOption.getAttribute('data-price')) || 500;
             let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
 
-            let total = Math.round(basePrice * multiplier);
-            document.getElementById('totalPrice').innerText = "₹" + total;
+            let total = basePrice * multiplier;
+
+            // If cart has items, sum up cart items instead or add base calculation
+            if(cart.length > 0) {
+                total = 0;
+                cart.forEach(item => {
+                    total += (item.price * multiplier * item.qty);
+                });
+            }
+
+            if(appliedDiscount > 0) {
+                total = total - (total * (appliedDiscount / 100));
+            }
+
+            let finalTotal = Math.round(total);
+            document.getElementById('totalPrice').innerText = "₹" + finalTotal;
         }
 
         function sendWhatsAppOrder() {
@@ -465,8 +658,10 @@
             let cakeText = document.getElementById('cakeText').value || "None";
             let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
             let deliveryTime = document.getElementById('deliveryTime').value;
-            let custName = document.getElementById('custName').value;
-            let custAddress = document.getElementById('custAddress').value;
+            let paymentMethod = document.getElementById('paymentMethod').value;
+            let upiTxnId = document.getElementById('upiTxnId').value.trim();
+            let custName = document.getElementById('custName').value.trim();
+            let custAddress = document.getElementById('custAddress').value.trim();
             let totalPrice = document.getElementById('totalPrice').innerText;
 
             if(!custName || !custAddress) {
@@ -474,11 +669,24 @@
                 return;
             }
 
+            if(paymentMethod === 'Online' && !upiTxnId) {
+                alert("Please enter your UPI Transaction / UTR Number for online payment verification!");
+                return;
+            }
+
+            let cartSummary = "";
+            if(cart.length > 0) {
+                cartSummary = cart.map(i => `${i.name} (${i.qty} qty)`).join(', ');
+            } else {
+                cartSummary = flavor;
+            }
+
             let orderData = {
                 name: custName,
-                flavor: flavor,
+                flavor: cartSummary,
                 weight: weight,
                 price: totalPrice,
+                payment: paymentMethod,
                 date: new Date().toLocaleString()
             };
 
@@ -487,12 +695,14 @@
             localStorage.setItem('shop_orders', JSON.stringify(orders));
 
             let message = `🍰 *NEW CAKE ORDER - PRIYATAM CAKE STUDIO* 🍰\n\n` +
-                          `*Flavor:* ${flavor}\n` +
-                          `*Weight:* ${weight}\n` +
+                          `*Items/Cart:* ${cartSummary}\n` +
+                          `*Weight Multiplier:* ${weight}\n` +
                           `*Message on Cake:* ${cakeText}\n` +
                           `*Delivery Date:* ${deliveryDate}\n` +
                           `*Time Slot:* ${deliveryTime}\n` +
-                          `*Total Price:* ${totalPrice}\n\n` +
+                          `*Payment Mode:* ${paymentMethod} ${paymentMethod === 'Online' ? '(Txn ID: '+upiTxnId+')' : ''}\n` +
+                          `*Coupon Applied:* ${appliedCouponCode ? appliedCouponCode + ' ('+appliedDiscount+'% off)' : 'None'}\n` +
+                          `*Total Payable:* ${totalPrice}\n\n` +
                           `*Customer Name:* ${custName}\n` +
                           `*Delivery Address:* ${custAddress}`;
 
@@ -517,20 +727,31 @@
                 alert("Please enter a valid cake name and price!");
                 return;
             }
-
-            if(!img) {
-                img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
-            }
+            if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
 
             cakes.push({ name: name, price: price, img: img });
             localStorage.setItem('cakes_data', JSON.stringify(cakes));
             alert("New Cake added successfully!");
-            
             document.getElementById('newCakeName').value = "";
             document.getElementById('newCakePrice').value = "";
             document.getElementById('newCakeImg').value = "";
-            
             initApp();
+        }
+
+        function addNewCoupon() {
+            let code = document.getElementById('newCouponCode').value.trim().toUpperCase();
+            let disc = parseInt(document.getElementById('newCouponDisc').value);
+
+            if(!code || isNaN(disc)) {
+                alert("Please enter valid coupon code and discount %!");
+                return;
+            }
+
+            coupons.push({ code: code, discount: disc });
+            localStorage.setItem('coupons_data', JSON.stringify(coupons));
+            alert("Coupon added successfully!");
+            document.getElementById('newCouponCode').value = "";
+            document.getElementById('newCouponDisc').value = "";
         }
 
         function addNewReview() {
@@ -546,11 +767,9 @@
             reviews.unshift({ name: name, text: text, rating: rating });
             localStorage.setItem('reviews_data', JSON.stringify(reviews));
             alert("New Review added successfully!");
-
             document.getElementById('reviewName').value = "";
             document.getElementById('reviewText').value = "";
             document.getElementById('reviewRating').value = "5";
-
             initApp();
         }
 
@@ -565,16 +784,14 @@
         function loadOrderHistory() {
             let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
             let container = document.getElementById('orderHistoryContainer');
-            
             if(orders.length === 0) {
                 container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet.</p>`;
                 return;
             }
-
             let html = "";
             orders.forEach(o => {
                 html += `<div class="order-item">
-                    <b>${o.name}</b> ordered ${o.weight} ${o.flavor} (${o.price})<br>
+                    <b>${o.name}</b> ordered ${o.weight} - ${o.flavor} (${o.price}) [${o.payment}]<br>
                     <span style="font-size: 0.7rem; color: #94a3b8;">${o.date}</span>
                 </div>`;
             });
