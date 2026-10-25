@@ -323,7 +323,7 @@
             <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
 
             <div class="price-box">
-                <p>Final Payable Amount</p>
+                <p id="deliveryFeeStatusText">Final Payable Amount</p>
                 <span id="totalPrice">₹500</span>
             </div>
 
@@ -441,12 +441,14 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 2. Delivery & Midnight Charges Config -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Delivery & Midnight Charges</h3>
+            <!-- 2. Delivery & Free Delivery Threshold Config -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Delivery & Free Delivery Rules</h3>
             <label>Deliverable PIN Codes (Comma separated)</label>
             <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
-            <label>Standard Area Delivery Fee (₹)</label>
+            <label>Standard Delivery Fee (₹)</label>
             <input type="number" id="adminDeliveryFee" placeholder="50">
+            <label>Free Delivery Threshold Amount (₹)</label>
+            <input type="number" id="adminFreeDeliveryLimit" placeholder="999 (Orders above this = Free Delivery)">
             <label>Midnight Delivery Extra Charge (₹)</label>
             <input type="number" id="adminMidnightFee" placeholder="100">
             <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
@@ -511,7 +513,6 @@
     </div>
 
     <script>
-        // Master Settings State
         let shopConfig = JSON.parse(localStorage.getItem('shop_config')) || {
             name: "Priyatam Cake Studio",
             whatsapp: "6001785308",
@@ -520,6 +521,7 @@
             customQrUrl: "",
             pincodes: "781001, 781002, 781003, 781024",
             deliveryFee: 50,
+            freeDeliveryLimit: 999,
             midnightFee: 100,
             blockedDate: ""
         };
@@ -611,6 +613,7 @@
                 document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
                 document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
                 document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
+                document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit || 999;
                 document.getElementById('adminMidnightFee').value = shopConfig.midnightFee || 100;
                 document.getElementById('adminBlockDate').value = shopConfig.blockedDate || "";
 
@@ -721,9 +724,10 @@
         function saveDeliveryConfig() {
             shopConfig.pincodes = document.getElementById('adminPincodes').value.trim();
             shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
+            shopConfig.freeDeliveryLimit = parseFloat(document.getElementById('adminFreeDeliveryLimit').value) || 999;
             shopConfig.midnightFee = parseFloat(document.getElementById('adminMidnightFee').value) || 100;
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Delivery & Midnight charges updated successfully!");
+            alert("Delivery & Free Delivery Rules updated successfully!");
             initApp();
         }
 
@@ -888,18 +892,27 @@
                 total = total - (total * (appliedDiscount / 100));
             }
 
-            // Check midnight delivery extra charge from config
+            // Check midnight delivery extra charge
             let deliveryTimeVal = document.getElementById('deliveryTime').value;
             if(deliveryTimeVal.includes("Midnight")) {
                 total += (shopConfig.midnightFee || 100);
             }
 
-            // Add delivery charge if pincode entered
+            // Check Free Delivery Threshold vs Standard Delivery Fee
             let pin = document.getElementById('pincodeInput').value.trim();
             let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
+            let feeStatusText = "Final Payable Amount";
+
             if(pin.length === 6 && allowed.includes(pin)) {
-                total += (shopConfig.deliveryFee || 0);
+                let limit = shopConfig.freeDeliveryLimit || 999;
+                if(total >= limit) {
+                    feeStatusText = "Final Payable Amount (🎉 Free Delivery Applied!)";
+                } else {
+                    total += (shopConfig.deliveryFee || 50);
+                    feeStatusText = `Final Payable Amount (Includes ₹${shopConfig.deliveryFee || 50} Delivery Fee)`;
+                }
             }
+            document.getElementById('deliveryFeeStatusText').innerText = feeStatusText;
 
             let finalTotal = Math.round(total);
             document.getElementById('totalPrice').innerText = "₹" + finalTotal;
