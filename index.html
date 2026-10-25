@@ -89,24 +89,17 @@
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; 
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between;
-            position: relative;
         }
         .cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.1); transform: translateY(-4px); }
         .cake-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
         .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
         .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; margin-bottom: 8px; }
-        .soldout-badge {
-            position: absolute; top: 10px; right: 10px; background: #ef4444; color: white;
-            font-size: 0.65rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;
-        }
         .btn-add-cart {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
             padding: 7px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s;
         }
-        .btn-add-cart:disabled { background: #475569; cursor: not-allowed; opacity: 0.6; }
         .btn-add-cart:active { transform: scale(0.95); }
 
-        /* Floating Cart Bar */
         .floating-cart {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white;
@@ -118,7 +111,6 @@
         .cart-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; }
         .cart-badge { background: #fff; color: #ec4899; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
 
-        /* Reviews Section */
         .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
         .review-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
@@ -173,14 +165,13 @@
             display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 14px 24px;
             border-radius: 30px; z-index: 99999; font-weight: bold; box-shadow: 0 10px 30px rgba(236,72,153,0.6);
-            animation: bounceIn 0.5s; text-align: center;
+            text-align: center;
         }
 
-        /* MODALS */
         #cartModal, #passwordModal, #adminModal, #trackerModal, #invoiceModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); z-index: 10000; overflow-y: auto; padding: 20px 15px;
+            z-index: 10000; overflow-y: auto; padding: 20px 15px;
         }
         #passwordModal, #cartModal, #trackerModal, #invoiceModal { align-items: center; justify-content: center; display: none; }
 
@@ -252,7 +243,6 @@
             <button onclick="openTrackerModal()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">Track Live Status</button>
         </div>
 
-        <!-- Popular Cakes Gallery Grid & Category Filters -->
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Menu & Cart</h3>
             <div class="category-filter" id="categoryFilterContainer">
@@ -265,13 +255,11 @@
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
 
-        <!-- Customer Testimonials Section -->
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-star" style="color: #fbbf24;"></i> Happy Customers</h3>
             <div class="reviews-container" id="reviewsContainer"></div>
         </div>
 
-        <!-- Checkout / Custom Order Form Card -->
         <div class="glass-card">
             <h2 class="section-title"><i class="fas fa-edit"></i> Secure Checkout Form</h2>
 
@@ -287,7 +275,12 @@
             </select>
 
             <label>Message on Cake</label>
-            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!">
+            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!" oninput="updateLiveCakePreview()">
+            
+            <div id="liveCakePreviewCard" style="display: none; background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15)); border: 1px dashed #f472b6; border-radius: 12px; padding: 12px; text-align: center; margin-top: 8px;">
+                <p style="font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase;">✨ AI Live Preview on Cake</p>
+                <p id="previewTextDisplay" style="font-family: 'Outfit'; font-size: 1.1rem; color: #f472b6; font-weight: bold; margin-top: 4px;"></p>
+            </div>
 
             <label>Delivery Date</label>
             <input type="date" id="deliveryDate" onchange="checkHolidayDate()">
@@ -301,7 +294,7 @@
                 <option id="midnightSlotLabel" value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
             </select>
 
-            <label>PIN Code (Delivery Area Check)</label>
+            <label>PIN Code (Geo-Delivery Area Check)</label>
             <input type="text" id="pincodeInput" placeholder="Enter 6-digit PIN code" oninput="checkPincode()">
             <p id="pincodeMsg" style="font-size: 0.75rem; color: #38bdf8; margin-top: 4px;"></p>
 
@@ -318,7 +311,6 @@
                 <option value="Online">Online UPI QR Code Payment (Advance)</option>
             </select>
 
-            <!-- UPI QR Box -->
             <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
                 <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
                 <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px; object-fit: contain;">
@@ -349,7 +341,6 @@
         <p class="footer-text">🔒 Secure Direct Ordering & Customer Support</p>
     </div>
 
-    <!-- Floating Cart Bar -->
     <div class="floating-cart" onclick="openCartModal()">
         <div class="cart-left">
             <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
@@ -365,7 +356,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- CART MODAL -->
     <div id="cartModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -379,7 +369,6 @@
         </div>
     </div>
 
-    <!-- TRACKER MODAL -->
     <div id="trackerModal">
         <div class="modal-box" style="text-align: center;">
             <div class="modal-header">
@@ -393,7 +382,6 @@
         </div>
     </div>
 
-    <!-- INVOICE DIGITAL RECEIPT MODAL -->
     <div id="invoiceModal">
         <div class="modal-box" id="invoicePrintArea" style="background: #fff; color: #1e293b; text-align: left;">
             <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
@@ -417,7 +405,6 @@
         </div>
     </div>
 
-    <!-- PASSWORD MODAL -->
     <div id="passwordModal">
         <div class="modal-box" style="max-width: 360px; text-align: center;">
             <h3 style="margin-bottom: 10px;">🔒 Admin Access</h3>
@@ -430,7 +417,6 @@
         </div>
     </div>
 
-    <!-- ULTIMATE MASTER ADMIN PANEL MODAL -->
     <div id="adminModal">
         <div class="admin-box">
             <div class="modal-header">
@@ -442,6 +428,16 @@
             <label>New Admin Password</label>
             <input type="text" id="adminNewPassInput" placeholder="Enter new secret password">
             <button class="btn-admin-act" onclick="saveAdminPassword()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Update Password</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bell"></i> Live Alarm & Sound Settings</h3>
+            <label>Order Notification Audio Alert</label>
+            <select id="adminSoundToggle">
+                <option value="ON">Enabled (Loud Alarm On New Order)</option>
+                <option value="OFF">Disabled</option>
+            </select>
+            <button class="btn-admin-act" onclick="playNotificationSound()" style="background: #3b82f6; margin-top: 6px;">Test Alarm Sound</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -458,7 +454,15 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- Full Product & Cake Customization Manager -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Geo-Delivery Rules</h3>
+            <label>Deliverable PIN Codes (Comma separated)</label>
+            <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
+            <label>Standard Delivery Fee (₹)</label>
+            <input type="number" id="adminDeliveryFee" placeholder="50">
+            <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-birthday-cake"></i> Cake & Product Customization</h3>
             <label>Product Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Dutch Chocolate Cake">
@@ -480,7 +484,7 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <label>📋 Live Orders & Status Updater</label>
+            <label>📋 Live Orders & WhatsApp Status Bot</label>
             <div class="order-history-box" id="orderHistoryContainer" style="max-height: 200px;">
                 <p style="color: #64748b; text-align: center;">No orders yet.</p>
             </div>
@@ -497,7 +501,8 @@
             pincodes: "781001, 781002, 781003",
             deliveryFee: 50,
             freeDeliveryLimit: 999,
-            adminPass: "admin123"
+            adminPass: "admin123",
+            soundAlert: "ON"
         };
 
         let defaultCakes = [
@@ -518,7 +523,6 @@
         let cart = JSON.parse(localStorage.getItem('cart_data')) || [];
         
         let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
-        let customAnnouncement = localStorage.getItem('site_announcement') || "";
         let appliedDiscount = 0;
         let appliedCouponCode = "";
         let currentFilter = "All";
@@ -527,6 +531,7 @@
         let clickTimer = null;
 
         function playNotificationSound() {
+            if(shopConfig.soundAlert === "OFF") return;
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = audioCtx.createOscillator();
@@ -548,6 +553,18 @@
             document.getElementById('toastMsg').innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function updateLiveCakePreview() {
+            let txt = document.getElementById('cakeText').value.trim();
+            let previewCard = document.getElementById('liveCakePreviewCard');
+            let display = document.getElementById('previewTextDisplay');
+            if(txt) {
+                previewCard.style.display = 'block';
+                display.innerText = "“" + txt + "”";
+            } else {
+                previewCard.style.display = 'none';
+            }
         }
 
         function handleTitleClick() {
@@ -582,10 +599,13 @@
                 document.getElementById('adminModal').style.display = 'block';
                 
                 document.getElementById('adminNewPassInput').value = "";
+                document.getElementById('adminSoundToggle').value = shopConfig.soundAlert || "ON";
                 document.getElementById('adminShopName').value = shopConfig.name;
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
                 document.getElementById('adminInstaUrl').value = shopConfig.instagram;
                 document.getElementById('adminUpiId').value = shopConfig.upiId;
+                document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
+                document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
 
                 loadAdminCakesList();
                 loadOrderHistory();
@@ -634,25 +654,20 @@
             let filtered = cakes.filter(c => currentFilter === 'All' || c.category === currentFilter);
             
             filtered.forEach((c) => {
-                let soldBadge = c.soldOut ? `<div class="soldout-badge">Sold Out</div>` : '';
-                let btnState = c.soldOut ? `disabled` : '';
-                let btnText = c.soldOut ? `Out of Stock` : `<i class="fas fa-cart-plus"></i> Add to Cart`;
-
                 gridHTML += `
                     <div class="cake-card">
-                        ${soldBadge}
                         <div>
                             <img src="${c.img}" alt="${c.name}" loading="lazy">
                             <h4>${c.name}</h4>
                             <p>₹${c.price} ${c.category === 'Add-ons' ? '' : '/ 0.5kg'}</p>
                         </div>
-                        <button class="btn-add-cart" ${btnState} onclick="addToCart('${c.name}', ${c.price})">
-                            ${btnText}
+                        <button class="btn-add-cart" onclick="addToCart('${c.name}', ${c.price})">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
                     </div>`;
             });
 
-            cakes.filter(c => !c.soldOut).forEach((c) => {
+            cakes.forEach((c) => {
                 selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price})</option>`;
             });
 
@@ -678,6 +693,7 @@
         }
 
         function saveShopSettings() {
+            shopConfig.soundAlert = document.getElementById('adminSoundToggle').value;
             shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
             shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
             shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
@@ -687,7 +703,14 @@
             initApp();
         }
 
-        // Complete Cake & Product Customization Manager
+        function saveDeliveryConfig() {
+            shopConfig.pincodes = document.getElementById('adminPincodes').value.trim();
+            shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Delivery rules saved!");
+            initApp();
+        }
+
         function addNewCake() {
             let name = document.getElementById('newCakeName').value.trim();
             let category = document.getElementById('newCakeCategory').value;
@@ -700,7 +723,7 @@
             }
             if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
 
-            cakes.push({ name: name, category: category, price: price, img: img, soldOut: false });
+            cakes.push({ name: name, category: category, price: price, img: img });
             localStorage.setItem('cakes_data', JSON.stringify(cakes));
             alert("Product added successfully!");
             document.getElementById('newCakeName').value = "";
@@ -763,7 +786,7 @@
                 let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
                 if(allowed.includes(pin)) {
                     msg.style.color = "#22c55e";
-                    msg.innerText = "✅ Delivery available!";
+                    msg.innerText = "✅ Smart Geo-Check: Delivery available!";
                 } else {
                     msg.style.color = "#ef4444";
                     msg.innerText = "❌ Delivery not available for this PIN.";
@@ -930,7 +953,6 @@
             showLiveToast("🚀 New Order Received!");
 
             let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
-            let rawNum = totalPrice.replace(/[^0-9]/g, '');
 
             let orderData = {
                 id: orderId,
@@ -938,8 +960,11 @@
                 phone: custPhone,
                 flavor: cartSummary,
                 weight: weight,
+                message: cakeText,
+                dateTime: `${deliveryDate} (${deliveryTime})`,
+                address: custAddress,
                 price: totalPrice,
-                rawPrice: parseFloat(rawNum) || 500,
+                payment: paymentMethod,
                 status: "Received",
                 date: new Date().toLocaleString()
             };
@@ -994,12 +1019,15 @@
             orders.forEach((o, idx) => {
                 html += `<div class="order-item">
                     <b>${o.id} - ${o.name}</b> (${o.phone})<br>Price: ${o.price}<br>
-                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding: 4px; font-size: 0.75rem; margin-top: 4px;">
-                        <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
-                        <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
-                        <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-                        <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                    </select>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
+                            <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
+                            <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
+                            <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                            <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                        </select>
+                        <button onclick="sendWhatsAppStatusBot(${idx})" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;"><i class="fab fa-whatsapp"></i> Bot</button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -1010,6 +1038,13 @@
             orders[idx].status = newStatus;
             localStorage.setItem('shop_orders', JSON.stringify(orders));
             loadOrderHistory();
+        }
+
+        function sendWhatsAppStatusBot(idx) {
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+            let o = orders[idx];
+            let botMsg = `Hello ${o.name}, update regarding your order *${o.id}* from *${shopConfig.name}*:\nYour order status is now: *${o.status}* 🍰.\nThank you for choosing us!`;
+            window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(botMsg)}`, '_blank');
         }
 
         function clearOrders() {
