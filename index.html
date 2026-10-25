@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Priyatam Cake Studio | Premium Bakehouse</title>
+    <title id="pageTitle">Priyatam Cake Studio | Premium Bakehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -105,7 +105,7 @@
         .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
         .review-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px; padding: 14px; transition: 0.3s;
+            border-radius: 16px; padding: 14px; transition: 0.3s; position: relative;
         }
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .review-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
@@ -152,7 +152,7 @@
         }
         .floating-support:hover { transform: scale(1.1); }
 
-        /* MODALS (Cart, Password, Admin) */
+        /* MODALS */
         #cartModal, #passwordModal, #adminModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
@@ -183,8 +183,9 @@
             padding: 14px 18px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%;
         }
 
-        .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 200px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
+        .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 180px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
         .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0; }
+        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 0.8rem; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
     </style>
@@ -193,7 +194,7 @@
 
     <div id="maintenanceScreen">
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
-        <h1>Under Maintenance</h1>
+        <h1 id="maintTitle">Under Maintenance</h1>
         <p style="color: #94a3b8; max-width: 300px;">We are currently updating our delicious menu! We will be back online shortly.</p>
         <button onclick="promptAdminPassword()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #777; padding: 6px 12px; border-radius: 8px;">Admin Login</button>
     </div>
@@ -205,14 +206,15 @@
 
     <header>
         <div class="badge">✨ Freshly Baked Everyday</div>
-        <h1 onclick="handleTitleClick()">Priyatam Cake Studio</h1>
+        <!-- 3 Taps on this Title will open Hidden Admin Panel -->
+        <h1 onclick="handleTitleClick()" id="shopTitleText">Priyatam Cake Studio</h1>
         <p>Order Handcrafted Custom Cakes in Seconds</p>
         
         <div class="social-bar">
-            <a href="https://www.instagram.com/priyatam._?psln=MXBrYjh5dDdvZGIzbw==" target="_blank" class="social-btn">
+            <a id="instaLinkBtn" href="https://www.instagram.com/priyatam._" target="_blank" class="social-btn">
                 <i class="fab fa-instagram" style="color: #e1306c;"></i> Instagram
             </a>
-            <a href="https://wa.me/916001785308" target="_blank" class="social-btn">
+            <a id="whatsappSupportBtn" href="https://wa.me/916001785308" target="_blank" class="social-btn">
                 <i class="fab fa-whatsapp" style="color: #25D366;"></i> Support Chat
             </a>
         </div>
@@ -277,8 +279,8 @@
             <!-- UPI QR Box (Hidden by default) -->
             <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
                 <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6001785308@paytm&pn=PriyatamCakeStudio" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px;">
-                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;">UPI ID: 6001785308@paytm</p>
+                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px;">
+                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
                 <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
                 <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
             </div>
@@ -315,7 +317,7 @@
     </div>
 
     <!-- Floating WhatsApp Support Button -->
-    <a href="https://wa.me/916001785308?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support" title="Support Chat">
+    <a id="floatingWhatsAppBtn" href="https://wa.me/916001785308?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support" title="Support Chat">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -346,22 +348,38 @@
         </div>
     </div>
 
-    <!-- ADMIN PANEL MODAL -->
+    <!-- ULTIMATE ADMIN PANEL MODAL -->
     <div id="adminModal">
         <div class="admin-box">
             <div class="modal-header">
-                <h3>⚙️ Shop Admin Control</h3>
+                <h3>⚙️ Master Admin Control</h3>
                 <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
             
+            <!-- 1. Shop Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop Settings & Links</h3>
+            <label>Shop / Brand Name</label>
+            <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
+            <label>WhatsApp Number (Without +91)</label>
+            <input type="text" id="adminWpNum" placeholder="6001785308">
+            <label>Instagram Profile URL</label>
+            <input type="text" id="adminInstaUrl" placeholder="https://www.instagram.com/priyatam._">
+            <label>UPI ID (for QR Code & Payments)</label>
+            <input type="text" id="adminUpiId" placeholder="6001785308@paytm">
+            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop Settings</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 2. Maintenance Toggle -->
             <label>1-Click Maintenance Mode Toggle</label>
             <button class="btn-admin-act" id="maintBtn" onclick="toggleMaintenance()" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
                 Turn ON Maintenance Mode
             </button>
 
-            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-plus-circle"></i> Add New Product / Cake</h3>
+            <!-- 3. Add Products -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add New Product / Cake</h3>
             <label>Cake Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Pineapple Delight">
             <label>Base Price (₹ / 0.5kg)</label>
@@ -370,30 +388,41 @@
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
             <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
-            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
-            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
+            <label style="margin-top: 12px;">Existing Cakes Management</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 120px;"></div>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 4. Coupons -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
             <label>Coupon Code</label>
             <input type="text" id="newCouponCode" placeholder="e.g. FESTIVE20" style="text-transform: uppercase;">
             <label>Discount Percentage (%)</label>
             <input type="number" id="newCouponDisc" placeholder="15">
-            <button class="btn-admin-act" onclick="addNewCoupon()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Add Coupon</button>
+            <button class="btn-admin-act" onclick="addNewCoupon()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Add Coupon</button>
 
-            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
-            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-star"></i> Add Customer Review</h3>
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 5. Reviews -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-star"></i> Add Customer Review</h3>
             <label>Customer Name</label>
             <input type="text" id="reviewName" placeholder="e.g. Rahul Sharma">
             <label>Review Comment</label>
             <input type="text" id="reviewText" placeholder="e.g. Super fresh and delicious!">
             <label>Rating (1 to 5 Stars)</label>
             <input type="number" id="reviewRating" min="1" max="5" value="5">
-            <button class="btn-admin-act" onclick="addNewReview()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Add Review</button>
+            <button class="btn-admin-act" onclick="addNewReview()" style="background: linear-gradient(135deg, #10b981, #059669);">Add Review</button>
 
-            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 6. Announcement -->
             <label>Announcement Notice Message</label>
             <input type="text" id="announcementInput" placeholder="Enter announcement text...">
-            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: linear-gradient(135deg, #10b981, #059669);">Update Announcement</button>
+            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">Update Announcement</button>
 
-            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 7. Orders History -->
             <label>📋 Received Customer Orders Log</label>
             <div class="order-history-box" id="orderHistoryContainer">
                 <p style="color: #64748b; text-align: center;">No orders yet.</p>
@@ -403,6 +432,14 @@
     </div>
 
     <script>
+        // Master Settings State
+        let shopConfig = JSON.parse(localStorage.getItem('shop_config')) || {
+            name: "Priyatam Cake Studio",
+            whatsapp: "6001785308",
+            instagram: "https://www.instagram.com/priyatam._",
+            upiId: "6001785308@paytm"
+        };
+
         let defaultCakes = [
             { name: "Dutch Chocolate", price: 500, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
             { name: "Red Velvet", price: 600, img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
@@ -459,14 +496,34 @@
             if(pass === "admin123") {
                 closePasswordModal();
                 document.getElementById('adminModal').style.display = 'block';
+                
+                // Load settings into inputs
+                document.getElementById('adminShopName').value = shopConfig.name;
+                document.getElementById('adminWpNum').value = shopConfig.whatsapp;
+                document.getElementById('adminInstaUrl').value = shopConfig.instagram;
+                document.getElementById('adminUpiId').value = shopConfig.upiId;
+
                 document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
                 loadOrderHistory();
+                loadAdminCakesList();
             } else {
                 alert("Wrong Password!");
             }
         }
 
         function initApp() {
+            // Apply Dynamic Shop Config
+            document.getElementById('shopTitleText').innerText = shopConfig.name;
+            document.getElementById('pageTitle').innerText = shopConfig.name + " | Premium Bakehouse";
+            document.getElementById('instaLinkBtn').href = shopConfig.instagram;
+            document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
+            document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
+            
+            // Setup QR code dynamically
+            let upiCode = shopConfig.upiId || "6001785308@paytm";
+            document.getElementById('qrImageDisplay').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${upiCode}&pn=${encodeURIComponent(shopConfig.name)}`;
+            document.getElementById('qrUpiIdText').innerText = "UPI ID: " + upiCode;
+
             if(isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
             } else {
@@ -479,7 +536,7 @@
                 banner.style.display = 'block';
             }
 
-            // Render Cakes Grid with Add to Cart button
+            // Render Cakes Grid
             let gridHTML = "";
             let selectHTML = "";
             cakes.forEach((c) => {
@@ -518,6 +575,17 @@
             calculatePrice();
         }
 
+        function saveShopSettings() {
+            shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
+            shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
+            shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
+            shopConfig.upiId = document.getElementById('adminUpiId').value.trim() || "6001785308@paytm";
+
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Shop Settings updated successfully!");
+            initApp();
+        }
+
         function addToCart(name, price) {
             let existing = cart.find(item => item.name === name);
             if(existing) {
@@ -548,10 +616,8 @@
                 return;
             }
             let html = "";
-            let subtotal = 0;
             cart.forEach((item, index) => {
                 let itemTotal = item.price * item.qty;
-                subtotal += itemTotal;
                 html += `
                     <div class="cart-item-row">
                         <div>
@@ -589,7 +655,6 @@
         function proceedToCheckout() {
             closeCartModal();
             if(cart.length > 0) {
-                // Set first item in cart as selected flavor dropdown if available
                 document.getElementById('flavor').value = cart[0].name;
             }
             window.scrollTo({ top: document.getElementById('flavor').offsetTop - 50, behavior: 'smooth' });
@@ -636,7 +701,6 @@
 
             let total = basePrice * multiplier;
 
-            // If cart has items, sum up cart items instead or add base calculation
             if(cart.length > 0) {
                 total = 0;
                 cart.forEach(item => {
@@ -694,7 +758,7 @@
             orders.unshift(orderData);
             localStorage.setItem('shop_orders', JSON.stringify(orders));
 
-            let message = `🍰 *NEW CAKE ORDER - PRIYATAM CAKE STUDIO* 🍰\n\n` +
+            let message = `🍰 *NEW CAKE ORDER - ${shopConfig.name}* 🍰\n\n` +
                           `*Items/Cart:* ${cartSummary}\n` +
                           `*Weight Multiplier:* ${weight}\n` +
                           `*Message on Cake:* ${cakeText}\n` +
@@ -707,7 +771,7 @@
                           `*Delivery Address:* ${custAddress}`;
 
             let encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/916001785308?text=${encodedMessage}`, '_blank');
+            window.open(`https://wa.me/91${shopConfig.whatsapp}?text=${encodedMessage}`, '_blank');
         }
 
         function toggleMaintenance() {
@@ -736,6 +800,26 @@
             document.getElementById('newCakePrice').value = "";
             document.getElementById('newCakeImg').value = "";
             initApp();
+            loadAdminCakesList();
+        }
+
+        function loadAdminCakesList() {
+            let container = document.getElementById('adminCakesList');
+            let html = "";
+            cakes.forEach((c, idx) => {
+                html += `<div class="manage-list-item">
+                    <span>${c.name} (₹${c.price})</span>
+                    <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:2px 8px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteCake(idx) {
+            cakes.splice(idx, 1);
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            initApp();
+            loadAdminCakesList();
         }
 
         function addNewCoupon() {
