@@ -7,11 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31103f 100%);
             color: #f8fafc; min-height: 100vh; padding-bottom: 90px; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         .bg-orb-1 {
@@ -47,8 +48,9 @@
             font-family: 'Outfit', sans-serif; font-size: 2.3rem; font-weight: 800;
             background: linear-gradient(to right, #ffffff, #f472b6, #38bdf8);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
-            cursor: pointer; user-select: none;
+            cursor: pointer; user-select: none; transition: transform 0.2s;
         }
+        header h1:active { transform: scale(0.98); }
         header p { font-size: 0.9rem; color: #94a3b8; font-weight: 500; }
 
         .social-bar { display: flex; justify-content: center; gap: 15px; margin-top: 15px; position: relative; z-index: 1; }
@@ -56,9 +58,9 @@
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 8px 16px; border-radius: 20px; color: #fff; font-size: 0.85rem; font-weight: 600;
             text-decoration: none; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);
-            transition: 0.3s;
+            transition: all 0.25s ease;
         }
-        .social-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: #f472b6; }
+        .social-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: #f472b6; transform: translateY(-2px); }
 
         .container { max-width: 480px; margin: 20px auto; padding: 0 16px; position: relative; z-index: 1; }
 
@@ -67,6 +69,7 @@
             -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 24px; padding: 24px; margin-bottom: 24px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
         }
 
         .section-title {
@@ -77,17 +80,18 @@
         .cake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .cake-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between;
+            border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between;
         }
-        .cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.1); transform: translateY(-3px); }
+        .cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.1); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(244,114,182,0.15); }
         .cake-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
         .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
         .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; margin-bottom: 8px; }
         .btn-add-cart {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
-            padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s;
+            padding: 7px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; transition: all 0.2s;
         }
-        .btn-add-cart:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-add-cart:active { transform: scale(0.95); }
 
         /* Floating Cart Bar */
         .floating-cart {
@@ -95,17 +99,17 @@
             background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white;
             padding: 12px 24px; border-radius: 35px; display: flex; align-items: center; justify-content: space-between;
             width: 90%; max-width: 440px; box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
-            z-index: 99; cursor: pointer; transition: 0.3s;
+            z-index: 99; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .floating-cart:hover { transform: translateX(-50%) scale(1.02); }
+        .floating-cart:hover { transform: translateX(-50%) scale(1.03); box-shadow: 0 15px 35px rgba(236, 72, 153, 0.7); }
         .cart-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; }
         .cart-badge { background: #fff; color: #ec4899; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
 
         /* Reviews Section */
-        .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+        .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
         .review-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px; padding: 14px; transition: 0.3s; position: relative;
+            border-radius: 16px; padding: 14px; transition: 0.2s;
         }
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .review-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
@@ -117,7 +121,7 @@
         select, input, textarea {
             width: 100%; padding: 14px 16px; border-radius: 14px;
             border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(15, 23, 42, 0.6);
-            color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
+            color: #fff; font-size: 0.95rem; outline: none; transition: all 0.25s;
         }
         select option { background: #0f172a; color: #fff; }
         select:focus, input:focus, textarea:focus {
@@ -140,7 +144,7 @@
             padding: 18px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; cursor: pointer;
             margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 0 25px rgba(34, 197, 94, 0.5); transition: 0.2s;
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.4); transition: all 0.2s;
         }
         .btn-order:active { transform: scale(0.97); }
 
@@ -148,44 +152,55 @@
             position: fixed; bottom: 85px; right: 20px; background: #25D366; color: white;
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; font-size: 24px; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5);
-            z-index: 90; text-decoration: none; transition: 0.3s;
+            z-index: 90; text-decoration: none; transition: all 0.25s;
         }
         .floating-support:hover { transform: scale(1.1); }
 
-        /* MODALS */
+        /* MODALS ANIMATION & STYLE */
         #cartModal, #passwordModal, #adminModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
-            z-index: 10000; overflow-y: auto; padding: 30px 15px;
+            -webkit-backdrop-filter: blur(12px); z-index: 10000; overflow-y: auto; padding: 20px 15px;
+            animation: fadeIn 0.25s ease-out forwards;
         }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         #passwordModal, #cartModal { align-items: center; justify-content: center; display: none; }
 
         .modal-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a); border: 2px solid rgba(244, 114, 182, 0.4);
             border-radius: 24px; max-width: 420px; width: 100%; padding: 24px; color: #fff;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7); max-height: 90vh; overflow-y: auto;
+            transform: scale(0.95); animation: scaleUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+        @keyframes scaleUp { to { transform: scale(1); } }
+
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .modal-header h3 { font-family: 'Outfit'; font-size: 1.3rem; color: #f472b6; }
-        .close-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+        .close-btn { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .close-btn:hover { background: #ef4444; color: #fff; }
 
         .cart-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 0.85rem; }
         .cart-controls { display: flex; align-items: center; gap: 8px; }
-        .cart-controls button { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .cart-controls button { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .cart-controls button:hover { background: #f472b6; }
 
         .admin-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a); border: 2px solid rgba(244, 114, 182, 0.4);
             border-radius: 28px; max-width: 480px; margin: 20px auto; padding: 28px; color: #fff;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            transform: scale(0.95); animation: scaleUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         .btn-admin-act {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
             padding: 14px 18px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%;
+            transition: all 0.2s;
         }
+        .btn-admin-act:active { transform: scale(0.98); }
 
         .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 180px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
         .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0; }
-        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 0.8rem; }
+        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
     </style>
@@ -279,7 +294,7 @@
             <!-- UPI QR Box (Hidden by default) -->
             <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
                 <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
-                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px;">
+                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px; object-fit: contain;">
                 <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
                 <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
                 <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
@@ -356,17 +371,19 @@
                 <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
             
-            <!-- 1. Shop Settings -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop Settings & Links</h3>
+            <!-- 1. Shop & Payment QR Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Payment QR Settings</h3>
             <label>Shop / Brand Name</label>
             <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
             <label>WhatsApp Number (Without +91)</label>
             <input type="text" id="adminWpNum" placeholder="6001785308">
             <label>Instagram Profile URL</label>
             <input type="text" id="adminInstaUrl" placeholder="https://www.instagram.com/priyatam._">
-            <label>UPI ID (for QR Code & Payments)</label>
+            <label>UPI ID (e.g. 6001785308@paytm)</label>
             <input type="text" id="adminUpiId" placeholder="6001785308@paytm">
-            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop Settings</button>
+            <label>Custom UPI QR Code Image URL (Optional)</label>
+            <input type="text" id="adminCustomQrUrl" placeholder="https://i.ibb.co/... or leave blank for auto-generate">
+            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop & QR Settings</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -378,18 +395,18 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 3. Add Products -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add New Product / Cake</h3>
+            <!-- 3. Add & Remove Products -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add / Remove Products (Cakes & Photos)</h3>
             <label>Cake Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Pineapple Delight">
             <label>Base Price (₹ / 0.5kg)</label>
             <input type="number" id="newCakePrice" placeholder="450">
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
-            <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
+            <button class="btn-admin-act" onclick="addNewCake()">Add Product / Cake</button>
 
-            <label style="margin-top: 12px;">Existing Cakes Management</label>
-            <div class="order-history-box" id="adminCakesList" style="max-height: 120px;"></div>
+            <label style="margin-top: 12px;">Manage Existing Cakes (Click Delete to Remove)</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 140px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -437,7 +454,8 @@
             name: "Priyatam Cake Studio",
             whatsapp: "6001785308",
             instagram: "https://www.instagram.com/priyatam._",
-            upiId: "6001785308@paytm"
+            upiId: "6001785308@paytm",
+            customQrUrl: ""
         };
 
         let defaultCakes = [
@@ -502,6 +520,7 @@
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
                 document.getElementById('adminInstaUrl').value = shopConfig.instagram;
                 document.getElementById('adminUpiId').value = shopConfig.upiId;
+                document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
 
                 document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
                 loadOrderHistory();
@@ -519,10 +538,10 @@
             document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
             document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
             
-            // Setup QR code dynamically
-            let upiCode = shopConfig.upiId || "6001785308@paytm";
-            document.getElementById('qrImageDisplay').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${upiCode}&pn=${encodeURIComponent(shopConfig.name)}`;
-            document.getElementById('qrUpiIdText').innerText = "UPI ID: " + upiCode;
+            // Setup QR code (Custom QR image URL takes priority if provided, otherwise auto-generates UPI QR)
+            let qrSource = shopConfig.customQrUrl ? shopConfig.customQrUrl : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${shopConfig.upiId || '6001785308@paytm'}&pn=${encodeURIComponent(shopConfig.name)}`;
+            document.getElementById('qrImageDisplay').src = qrSource;
+            document.getElementById('qrUpiIdText').innerText = "UPI ID: " + (shopConfig.upiId || "6001785308@paytm");
 
             if(isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
@@ -543,7 +562,7 @@
                 gridHTML += `
                     <div class="cake-card">
                         <div>
-                            <img src="${c.img}" alt="${c.name}">
+                            <img src="${c.img}" alt="${c.name}" loading="lazy">
                             <h4>${c.name}</h4>
                             <p>₹${c.price} / 0.5kg</p>
                         </div>
@@ -580,9 +599,10 @@
             shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
             shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
             shopConfig.upiId = document.getElementById('adminUpiId').value.trim() || "6001785308@paytm";
+            shopConfig.customQrUrl = document.getElementById('adminCustomQrUrl').value.trim() || "";
 
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Shop Settings updated successfully!");
+            alert("Shop & QR Settings updated successfully!");
             initApp();
         }
 
@@ -595,7 +615,6 @@
             }
             localStorage.setItem('cart_data', JSON.stringify(cart));
             updateCartUI();
-            alert(name + " added to cart!");
         }
 
         function updateCartUI() {
@@ -808,18 +827,20 @@
             let html = "";
             cakes.forEach((c, idx) => {
                 html += `<div class="manage-list-item">
-                    <span>${c.name} (₹${c.price})</span>
-                    <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:2px 8px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                    <span><b>${c.name}</b> (₹${c.price})</span>
+                    <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
         function deleteCake(idx) {
-            cakes.splice(idx, 1);
-            localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            initApp();
-            loadAdminCakesList();
+            if(confirm("Are you sure you want to remove this cake?")) {
+                cakes.splice(idx, 1);
+                localStorage.setItem('cakes_data', JSON.stringify(cakes));
+                initApp();
+                loadAdminCakesList();
+            }
         }
 
         function addNewCoupon() {
