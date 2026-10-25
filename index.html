@@ -163,6 +163,14 @@
         }
         .floating-support:hover { transform: scale(1.1); }
 
+        /* LIVE ORDER NOTIFICATION TOAST */
+        #liveAlertToast {
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 14px 24px;
+            border-radius: 30px; z-index: 99999; font-weight: bold; box-shadow: 0 10px 30px rgba(236,72,153,0.6);
+            animation: bounceIn 0.5s; text-align: center;
+        }
+
         /* MODALS */
         #cartModal, #passwordModal, #adminModal, #trackerModal, #invoiceModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -195,13 +203,16 @@
         }
 
         .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 180px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
-        .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 0; }
+        .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 0; }
         .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
     </style>
 </head>
 <body>
+
+    <!-- Live Toast Notification Banner -->
+    <div id="liveAlertToast"><i class="fas fa-bell"></i> <span id="toastMsg">New Order Received!</span></div>
 
     <div id="maintenanceScreen">
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
@@ -273,7 +284,13 @@
             </select>
 
             <label>Message on Cake</label>
-            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!">
+            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Priyatam!" oninput="updateLiveCakePreview()">
+            
+            <!-- Feature 2: AI Live Cake Preview Card -->
+            <div id="liveCakePreviewCard" style="display: none; background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15)); border: 1px dashed #f472b6; border-radius: 12px; padding: 12px; text-align: center; margin-top: 8px;">
+                <p style="font-size: 0.75rem; color: #cbd5e1; text-transform: uppercase;">✨ AI Live Preview on Cake</p>
+                <p id="previewTextDisplay" style="font-family: 'Outfit'; font-size: 1.1rem; color: #f472b6; font-weight: bold; margin-top: 4px;"></p>
+            </div>
 
             <label>Delivery Date</label>
             <input type="date" id="deliveryDate" onchange="checkHolidayDate()">
@@ -287,7 +304,7 @@
                 <option id="midnightSlotLabel" value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
             </select>
 
-            <label>PIN Code (Delivery Area Check)</label>
+            <label>PIN Code (Geo-Delivery Area Check)</label>
             <input type="text" id="pincodeInput" placeholder="Enter 6-digit PIN code" oninput="checkPincode()">
             <p id="pincodeMsg" style="font-size: 0.75rem; color: #38bdf8; margin-top: 4px;"></p>
 
@@ -409,7 +426,7 @@
         <div class="modal-box" style="max-width: 360px; text-align: center;">
             <h3 style="margin-bottom: 10px;">🔒 Admin Access</h3>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Enter secret password to continue</p>
-            <input type="password" id="adminPassInput" placeholder="Password (admin123)" style="margin-bottom: 15px; text-align: center;">
+            <input type="password" id="adminPassInput" placeholder="Password" style="margin-bottom: 15px; text-align: center;">
             <div style="display: flex; gap: 10px;">
                 <button onclick="closePasswordModal()" style="flex:1; background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 600;">Cancel</button>
                 <button onclick="verifyPassword()" style="flex:1; background: #ec4899; border: none; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 700;">Login</button>
@@ -425,7 +442,26 @@
                 <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
             
-            <!-- 1. Shop & QR Settings -->
+            <!-- 0. Change Admin Password -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-key"></i> Change Admin Password</h3>
+            <label>New Admin Password</label>
+            <input type="text" id="adminNewPassInput" placeholder="Enter new secret password">
+            <button class="btn-admin-act" onclick="saveAdminPassword()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Update Password</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 1. Notification Sound & Realtime Alert Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bell"></i> Live Alarm & Sound Settings</h3>
+            <label>Order Notification Audio Alert</label>
+            <select id="adminSoundToggle">
+                <option value="ON">Enabled (Loud Alarm On New Order)</option>
+                <option value="OFF">Disabled</option>
+            </select>
+            <button class="btn-admin-act" onclick="playNotificationSound()" style="background: #3b82f6; margin-top: 6px;">Test Alarm Sound</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 2. Shop & QR Settings -->
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Payment QR Settings</h3>
             <label>Shop / Brand Name</label>
             <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
@@ -441,8 +477,8 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 2. Delivery & Free Delivery Threshold Config -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Delivery & Free Delivery Rules</h3>
+            <!-- 3. Geo-Delivery & Free Delivery Threshold Config -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Geo-Delivery & Free Rules</h3>
             <label>Deliverable PIN Codes (Comma separated)</label>
             <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
             <label>Standard Delivery Fee (₹)</label>
@@ -455,7 +491,7 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 3. Holiday / Blockout Date Manager -->
+            <!-- 4. Holiday / Blockout Date Manager -->
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-calendar-times"></i> Holiday / Blockout Date</h3>
             <label>Block Specific Date (No Deliveries)</label>
             <input type="date" id="adminBlockDate">
@@ -463,7 +499,7 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 4. Maintenance Toggle -->
+            <!-- 5. Maintenance Toggle -->
             <label>1-Click Maintenance Mode Toggle</label>
             <button class="btn-admin-act" id="maintBtn" onclick="toggleMaintenance()" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
                 Turn ON Maintenance Mode
@@ -471,7 +507,7 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 5. Products, Cakes & Party Add-ons Manager -->
+            <!-- 6. Products, Cakes & Party Add-ons Manager -->
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add Products & Party Add-ons</h3>
             <label>Product Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Magic Candle or Chocolate Cake">
@@ -493,7 +529,7 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 6. Coupons -->
+            <!-- 7. Coupons -->
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
             <label>Coupon Code</label>
             <input type="text" id="newCouponCode" placeholder="e.g. FESTIVE20" style="text-transform: uppercase;">
@@ -503,9 +539,9 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 7. Customer Orders & Status Updater -->
-            <label>📋 Live Orders & Status Updater</label>
-            <div class="order-history-box" id="orderHistoryContainer" style="max-height: 220px;">
+            <!-- 8. Live Orders & Status Updater with WhatsApp Bot Button -->
+            <label>📋 Live Orders & WhatsApp Status Bot</label>
+            <div class="order-history-box" id="orderHistoryContainer" style="max-height: 240px;">
                 <p style="color: #64748b; text-align: center;">No orders yet.</p>
             </div>
             <button class="btn-admin-act" onclick="clearOrders()" style="background: #ef4444; font-size: 0.8rem; padding: 8px;">Clear Orders History</button>
@@ -523,7 +559,9 @@
             deliveryFee: 50,
             freeDeliveryLimit: 999,
             midnightFee: 100,
-            blockedDate: ""
+            blockedDate: "",
+            adminPass: "admin123",
+            soundAlert: "ON"
         };
 
         let defaultCakes = [
@@ -560,6 +598,7 @@
         let clickTimer = null;
 
         function playNotificationSound() {
+            if(shopConfig.soundAlert === "OFF") return;
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = audioCtx.createOscillator();
@@ -567,13 +606,32 @@
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
                 osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
+                osc.stop(audioCtx.currentTime + 0.8);
             } catch(e) { console.log("Audio not supported"); }
+        }
+
+        function showLiveToast(msg) {
+            let toast = document.getElementById('liveAlertToast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function updateLiveCakePreview() {
+            let txt = document.getElementById('cakeText').value.trim();
+            let previewCard = document.getElementById('liveCakePreviewCard');
+            let display = document.getElementById('previewTextDisplay');
+            if(txt) {
+                previewCard.style.display = 'block';
+                display.innerText = "“" + txt + "”";
+            } else {
+                previewCard.style.display = 'none';
+            }
         }
 
         function handleTitleClick() {
@@ -602,10 +660,13 @@
 
         function verifyPassword() {
             let pass = document.getElementById('adminPassInput').value;
-            if(pass === "admin123") {
+            let currentPass = shopConfig.adminPass || "admin123";
+            if(pass === currentPass) {
                 closePasswordModal();
                 document.getElementById('adminModal').style.display = 'block';
                 
+                document.getElementById('adminNewPassInput').value = "";
+                document.getElementById('adminSoundToggle').value = shopConfig.soundAlert || "ON";
                 document.getElementById('adminShopName').value = shopConfig.name;
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
                 document.getElementById('adminInstaUrl').value = shopConfig.instagram;
@@ -623,6 +684,18 @@
             } else {
                 alert("Wrong Password!");
             }
+        }
+
+        function saveAdminPassword() {
+            let newPass = document.getElementById('adminNewPassInput').value.trim();
+            if(!newPass) {
+                alert("Please enter a valid new password!");
+                return;
+            }
+            shopConfig.adminPass = newPass;
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Admin password updated successfully!");
+            document.getElementById('adminNewPassInput').value = "";
         }
 
         function initApp() {
@@ -710,6 +783,7 @@
         }
 
         function saveShopSettings() {
+            shopConfig.soundAlert = document.getElementById('adminSoundToggle').value;
             shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
             shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
             shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
@@ -717,7 +791,7 @@
             shopConfig.customQrUrl = document.getElementById('adminCustomQrUrl').value.trim() || "";
 
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Shop & QR Settings updated successfully!");
+            alert("Shop & Alarm Settings updated successfully!");
             initApp();
         }
 
@@ -727,7 +801,7 @@
             shopConfig.freeDeliveryLimit = parseFloat(document.getElementById('adminFreeDeliveryLimit').value) || 999;
             shopConfig.midnightFee = parseFloat(document.getElementById('adminMidnightFee').value) || 100;
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Delivery & Free Delivery Rules updated successfully!");
+            alert("Geo-Delivery Rules updated successfully!");
             initApp();
         }
 
@@ -755,7 +829,7 @@
                 let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
                 if(allowed.includes(pin)) {
                     msg.style.color = "#22c55e";
-                    msg.innerText = "✅ Delivery available in your area!";
+                    msg.innerText = "✅ Smart Geo-Check: Delivery available in your area!";
                 } else {
                     msg.style.color = "#ef4444";
                     msg.innerText = "❌ Delivery not available for this PIN code.";
@@ -892,13 +966,11 @@
                 total = total - (total * (appliedDiscount / 100));
             }
 
-            // Check midnight delivery extra charge
             let deliveryTimeVal = document.getElementById('deliveryTime').value;
             if(deliveryTimeVal.includes("Midnight")) {
                 total += (shopConfig.midnightFee || 100);
             }
 
-            // Check Free Delivery Threshold vs Standard Delivery Fee
             let pin = document.getElementById('pincodeInput').value.trim();
             let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
             let feeStatusText = "Final Payable Amount";
@@ -949,6 +1021,7 @@
             }
 
             playNotificationSound();
+            showLiveToast("🚀 New Order Placed Successfully!");
 
             let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
 
@@ -1105,12 +1178,15 @@
                     <b>${o.id} - ${o.name}</b> (${o.phone})<br>
                     Ordered: ${o.flavor} (${o.price})<br>
                     Status: <span style="color: ${statusColor}; font-weight: bold;">${o.status}</span>
-                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding: 4px; font-size: 0.75rem; margin-top: 4px;">
-                        <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
-                        <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
-                        <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-                        <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                    </select>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        <select onchange="updateOrderStatus(${idx}, this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
+                            <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
+                            <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
+                            <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                            <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                        </select>
+                        <button onclick="sendWhatsAppStatusBot(${idx})" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Bot"><i class="fab fa-whatsapp"></i> Bot</button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -1122,6 +1198,13 @@
             localStorage.setItem('shop_orders', JSON.stringify(orders));
             loadOrderHistory();
             alert("Order status updated to: " + newStatus);
+        }
+
+        function sendWhatsAppStatusBot(idx) {
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+            let o = orders[idx];
+            let botMsg = `Hello ${o.name}, update regarding your order *${o.id}* from *${shopConfig.name}*:\nYour order status is now: *${o.status}* 🍰.\nThank you for choosing us!`;
+            window.open(`https://wa.me/91${o.phone}?text=${encodeURIComponent(botMsg)}`, '_blank');
         }
 
         function clearOrders() {
