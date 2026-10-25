@@ -323,123 +323,233 @@
             <label>Payment Method</label>
             <select id="paymentMethod" onchange="togglePaymentQR()">
                 <option value="COD">Cash on Delivery (Pay on Delivery)</option>
-                <option value="Online">Online Payment (Razorpay / UPI)</option>
+                <option value="Online">Online UPI QR Code Payment (Advance)</option>
             </select>
 
-            <!-- UPI QR Code Box (Initially Hidden) -->
-            <div id="qrCodeContainer" style="display: none; text-align: center; margin-top: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1);">
-                <p style="font-size: 0.8rem; color: #f472b6; margin-bottom: 8px;">Scan & Pay via any UPI App</p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=6001785308@ptsbi&pn=Priyatam%20Cake%20Studio&am=0&cu=INR" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 6px;">
-                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 8px;">UPI ID: <strong>6001785308@ptsbi</strong></p>
-                <label style="margin-top: 10px;">Enter Transaction ID / UTR</label>
-                <input type="text" id="utrInput" placeholder="e.g. 3342xxxxxxxx" style="text-align: center;">
+            <!-- UPI QR Box -->
+            <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
+                <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
+                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px; object-fit: contain;">
+                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
+                <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
+                <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
             </div>
+
+            <label>Your Name</label>
+            <input type="text" id="custName" placeholder="Enter your full name">
+
+            <label>Mobile Number (For Order Tracking)</label>
+            <input type="text" id="custPhone" placeholder="Enter 10-digit mobile number">
+
+            <label>Delivery Address</label>
+            <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
 
             <div class="price-box">
-                <p>Total Payable Amount</p>
-                <span id="totalPriceDisplay">₹0</span>
+                <p id="deliveryFeeStatusText">Final Payable Amount</p>
+                <span id="totalPrice">₹500</span>
             </div>
 
-            <button class="btn-order" onclick="sendWhatsAppOrder()"><i class="fab fa-whatsapp"></i> Order via WhatsApp</button>
+            <button class="btn-order" onclick="sendWhatsAppOrder()">
+                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Complete WhatsApp Order
+            </button>
         </div>
 
-        <div class="footer-text">
-            <p>&copy; 2026 Priyatam Cake Studio. All rights reserved.</p>
-        </div>
+        <p class="footer-text">🔒 Secure Direct Ordering & Customer Support</p>
     </div>
 
     <!-- Floating Cart Bar -->
     <div class="floating-cart" onclick="openCartModal()">
         <div class="cart-left">
-            <i class="fas fa-shopping-bag"></i> View Bag
-            <span class="cart-badge" id="floatingCartCount">0</span>
+            <i class="fas fa-shopping-bag" style="font-size: 1.2rem;"></i>
+            <span>View Cart Items</span>
         </div>
-        <div id="floatingCartTotal" style="font-weight: 800; font-size: 1rem;">₹0</div>
+        <div>
+            <span class="cart-badge" id="cartCountBadge">0 Items</span>
+            <span style="font-weight: 800; margin-left: 6px;" id="cartTotalBadge">₹0</span>
+        </div>
     </div>
 
-    <a href="https://wa.me/916001785308" target="_blank" class="floating-support"><i class="fab fa-whatsapp"></i></a>
+    <!-- Floating WhatsApp Support Button -->
+    <a id="floatingWhatsAppBtn" href="https://wa.me/916001785308?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support" title="Support Chat">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- CART MODAL -->
     <div id="cartModal">
         <div class="modal-box">
             <div class="modal-header">
-                <h3><i class="fas fa-shopping-bag"></i> Your Shopping Bag</h3>
-                <button class="close-btn" onclick="closeCartModal()">×</button>
+                <h3>🛍️ Your Shopping Cart</h3>
+                <button class="close-btn" onclick="closeCartModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div id="cartItemsContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                <span>Subtotal:</span>
-                <span id="cartModalTotal">₹0</span>
+            <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+                <p style="color: #94a3b8; text-align: center;">Your cart is empty.</p>
             </div>
-            <button class="btn-order" style="margin-top: 0; padding: 14px;" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            <button class="btn-admin-act" onclick="proceedToCheckout()" style="background: linear-gradient(135deg, #22c55e, #16a34a); margin-top: 0;">Proceed to Checkout</button>
         </div>
     </div>
 
-    <!-- ORDER TRACKER MODAL -->
+    <!-- TRACKER MODAL -->
     <div id="trackerModal">
-        <div class="modal-box">
+        <div class="modal-box" style="text-align: center;">
             <div class="modal-header">
-                <h3><i class="fas fa-search-location"></i> Track Your Order</h3>
-                <button class="close-btn" onclick="closeTrackerModal()">×</button>
+                <h3>🔍 Live Order Status</h3>
+                <button class="close-btn" onclick="closeTrackerModal()"><i class="fas fa-times"></i></button>
             </div>
-            <label>Enter Mobile Number or Order ID</label>
-            <input type="text" id="trackQueryInput" placeholder="e.g. 9876543210">
-            <button class="btn-admin-act" onclick="searchOrderStatus()">Check Status</button>
-            <div id="trackResultBox" style="margin-top: 15px; font-size: 0.85rem;"></div>
+            <label>Enter Your Mobile Number</label>
+            <input type="text" id="trackPhoneInput" placeholder="10-digit mobile number" style="margin-bottom: 12px; text-align: center;">
+            <button class="btn-admin-act" onclick="searchOrderStatus()" style="background: #3b82f6; margin-top: 0;">Check Status</button>
+            <div id="trackerResultBox" style="margin-top: 15px; font-size: 0.9rem; text-align: left;"></div>
         </div>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL -->
+    <!-- INVOICE DIGITAL RECEIPT MODAL -->
+    <div id="invoiceModal">
+        <div class="modal-box" id="invoicePrintArea" style="background: #fff; color: #1e293b; text-align: left;">
+            <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 12px;">
+                <h2 id="invShopName" style="color: #ec4899; font-family: 'Outfit';">Priyatam Cake Studio</h2>
+                <p style="font-size: 0.75rem; color: #64748b;">Official Digital Order Receipt</p>
+            </div>
+            <div style="font-size: 0.85rem; line-height: 1.6;">
+                <p><b>Order ID:</b> <span id="invId">#1024</span></p>
+                <p><b>Customer:</b> <span id="invCustName"></span></p>
+                <p><b>Mobile:</b> <span id="invPhone"></span></p>
+                <p><b>Items:</b> <span id="invItems"></span></p>
+                <p><b>Weight:</b> <span id="invWeight"></span></p>
+                <p><b>Message:</b> <span id="invMessage"></span></p>
+                <p><b>Delivery Date & Time:</b> <span id="invDateTime"></span></p>
+                <p><b>Delivery Address:</b> <span id="invAddress"></span></p>
+                <p><b>Payment:</b> <span id="invPayment"></span></p>
+                <h3 style="color: #16a34a; margin-top: 10px; text-align: right;">Total Paid: <span id="invTotal"></span></h3>
+            </div>
+            <button class="btn-admin-act" onclick="window.print()" style="background: #334155; margin-top: 15px;"><i class="fas fa-print"></i> Print / Save Bill</button>
+            <button class="btn-admin-act" onclick="closeInvoiceModal()" style="background: #ef4444; margin-top: 8px;">Close</button>
+        </div>
+    </div>
+
+    <!-- PASSWORD MODAL -->
     <div id="passwordModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3><span style="color: #f472b6;">🔒</span> Admin Login</h3>
-                <button class="close-btn" onclick="closePasswordModal()">×</button>
+        <div class="modal-box" style="max-width: 360px; text-align: center;">
+            <h3 style="margin-bottom: 10px;">🔒 Admin Access</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Enter secret password to continue</p>
+            <input type="password" id="adminPassInput" placeholder="Password" style="margin-bottom: 15px; text-align: center;">
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closePasswordModal()" style="flex:1; background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 600;">Cancel</button>
+                <button onclick="verifyPassword()" style="flex:1; background: #ec4899; border: none; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 700;">Login</button>
             </div>
-            <label>Enter Admin Passcode</label>
-            <input type="password" id="adminPassInput" placeholder="Enter PIN">
-            <button class="btn-admin-act" onclick="verifyAdminPassword()">Login</button>
         </div>
     </div>
 
-    <!-- ADMIN PANEL MODAL -->
+    <!-- ULTIMATE MASTER ADMIN PANEL MODAL -->
     <div id="adminModal">
         <div class="admin-box">
             <div class="modal-header">
-                <h3><i class="fas fa-user-shield"></i> Admin Panel</h3>
-                <button class="close-btn" onclick="closeAdminModal()">×</button>
+                <h3>⚙️ Master Admin Control</h3>
+                <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
             
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="btn-admin-act" style="margin-top:0;" onclick="switchAdminTab('orders')">Orders</button>
-                <button class="btn-admin-act" style="margin-top:0; background:rgba(255,255,255,0.1);" onclick="switchAdminTab('products')">Products</button>
-            </div>
+            <!-- 0. Change Admin Password -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-key"></i> Change Admin Password</h3>
+            <label>New Admin Password</label>
+            <input type="text" id="adminNewPassInput" placeholder="Enter new secret password">
+            <button class="btn-admin-act" onclick="saveAdminPassword()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Update Password</button>
 
-            <!-- Orders Tab -->
-            <div id="adminOrdersTab">
-                <h4 style="font-size: 0.9rem; color: #f472b6; margin-bottom: 8px;">Live Customer Orders</h4>
-                <div class="order-history-box" id="adminOrdersList"></div>
-            </div>
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- Products Tab -->
-            <div id="adminProductsTab" style="display: none;">
-                <h4 style="font-size: 0.9rem; color: #f472b6; margin-bottom: 8px;">Add New Cake</h4>
-                <input type="text" id="newCakeName" placeholder="Cake Name" style="margin-bottom: 8px;">
-                <input type="number" id="newCakePrice" placeholder="Base Price (₹)" style="margin-bottom: 8px;">
-                <input type="text" id="newCakeImg" placeholder="Image URL" style="margin-bottom: 8px;">
-                <select id="newCakeCat" style="margin-bottom: 8px;">
-                    <option value="Birthday">Birthday</option>
-                    <option value="Anniversary">Anniversary</option>
-                    <option value="Cupcakes">Cupcakes</option>
-                    <option value="Add-ons">Party Add-ons</option>
-                </select>
-                <button class="btn-admin-act" onclick="addNewCake()">Save & Add Cake</button>
-                
-                <h4 style="font-size: 0.9rem; color: #f472b6; margin: 15px 0 8px;">Manage Existing Cakes</h4>
-                <div id="adminManageProductsList" style="max-height: 150px; overflow-y: auto;"></div>
-            </div>
+            <!-- 1. Notification Sound & Realtime Alert Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bell"></i> Live Alarm & Sound Settings</h3>
+            <label>Order Notification Audio Alert</label>
+            <select id="adminSoundToggle">
+                <option value="ON">Enabled (Loud Alarm On New Order)</option>
+                <option value="OFF">Disabled</option>
+            </select>
+            <button class="btn-admin-act" onclick="playNotificationSound()" style="background: #3b82f6; margin-top: 6px;">Test Alarm Sound</button>
 
-            <button onclick="closeAdminModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 100%; padding: 10px; border-radius: 12px; font-weight: 700; margin-top: 15px; cursor: pointer;">Close Panel</button>
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 2. Shop & QR Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Payment QR Settings</h3>
+            <label>Shop / Brand Name</label>
+            <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
+            <label>WhatsApp Number (Without +91)</label>
+            <input type="text" id="adminWpNum" placeholder="6001785308">
+            <label>Instagram Profile URL</label>
+            <input type="text" id="adminInstaUrl" placeholder="https://www.instagram.com/priyatam._">
+            <label>UPI ID (e.g. 6001785308@paytm)</label>
+            <input type="text" id="adminUpiId" placeholder="6001785308@paytm">
+            <label>Custom UPI QR Code Image URL (Optional)</label>
+            <input type="text" id="adminCustomQrUrl" placeholder="https://i.ibb.co/...">
+            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop & QR Settings</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 3. Geo-Delivery & Free Delivery Threshold Config -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Geo-Delivery & Free Rules</h3>
+            <label>Deliverable PIN Codes (Comma separated)</label>
+            <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
+            <label>Standard Delivery Fee (₹)</label>
+            <input type="number" id="adminDeliveryFee" placeholder="50">
+            <label>Free Delivery Threshold Amount (₹)</label>
+            <input type="number" id="adminFreeDeliveryLimit" placeholder="999 (Orders above this = Free Delivery)">
+            <label>Midnight Delivery Extra Charge (₹)</label>
+            <input type="number" id="adminMidnightFee" placeholder="100">
+            <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 4. Holiday / Blockout Date Manager -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-calendar-times"></i> Holiday / Blockout Date</h3>
+            <label>Block Specific Date (No Deliveries)</label>
+            <input type="date" id="adminBlockDate">
+            <button class="btn-admin-act" onclick="saveBlockDate()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Block Date</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 5. Maintenance Toggle -->
+            <label>1-Click Maintenance Mode Toggle</label>
+            <button class="btn-admin-act" id="maintBtn" onclick="toggleMaintenance()" style="background: linear-gradient(135deg, #eab308, #ca8a04);">
+                Turn ON Maintenance Mode
+            </button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 6. Products, Cakes & Party Add-ons Manager -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add Products & Party Add-ons</h3>
+            <label>Product Name</label>
+            <input type="text" id="newCakeName" placeholder="e.g. Magic Candle or Chocolate Cake">
+            <label>Category</label>
+            <select id="newCakeCategory">
+                <option value="Birthday">Birthday Cake</option>
+                <option value="Anniversary">Anniversary Cake</option>
+                <option value="Cupcakes">Cupcakes</option>
+                <option value="Add-ons">Party Add-ons (Candles, Caps, Knife)</option>
+            </select>
+            <label>Price (₹)</label>
+            <input type="number" id="newCakePrice" placeholder="450">
+            <label>Photo Image Link URL</label>
+            <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
+            <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
+
+            <label style="margin-top: 12px;">Existing Products & Add-ons Management</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 140px;"></div>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 7. Coupons -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-tag"></i> Add Discount Coupon</h3>
+            <label>Coupon Code</label>
+            <input type="text" id="newCouponCode" placeholder="e.g. FESTIVE20" style="text-transform: uppercase;">
+            <label>Discount Percentage (%)</label>
+            <input type="number" id="newCouponDisc" placeholder="15">
+            <button class="btn-admin-act" onclick="addNewCoupon()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Add Coupon</button>
+
+            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
+
+            <!-- 8. Live Orders & Status Updater with WhatsApp Bot Button -->
+            <label>📋 Live Orders & WhatsApp Status Bot</label>
+            <div class="order-history-box" id="orderHistoryContainer" style="max-height: 240px;">
+                <p style="color: #64748b; text-align: center;">No orders yet.</p>
+            </div>
+            <button class="btn-admin-act" onclick="clearOrders()" style="background: #ef4444; font-size: 0.8rem; padding: 8px;">Clear Orders History</button>
         </div>
     </div>
 
@@ -458,400 +568,695 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let shopConfig = {
+        let shopConfig = JSON.parse(localStorage.getItem('shop_config')) || {
             name: "Priyatam Cake Studio",
-            whatsapp: "916001785308",
-            adminPin: "1234",
-            discountPercent: 10
+            whatsapp: "6001785308",
+            instagram: "https://www.instagram.com/priyatam._",
+            upiId: "6001785308@paytm",
+            customQrUrl: "",
+            pincodes: "781001, 781002, 781003, 781024",
+            deliveryFee: 50,
+            freeDeliveryLimit: 999,
+            midnightFee: 100,
+            blockedDate: "",
+            adminPass: "admin123",
+            soundAlert: "ON"
         };
 
         let defaultCakes = [
-            { id: 1, name: "Belgian Chocolate Truffle", price: 650, category: "Birthday", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400" },
-            { id: 2, name: "Red Velvet Heart Cake", price: 700, category: "Anniversary", img: "https://images.unsplash.com/photo-1586788680434-30d324b2d46f?w=400" },
-            { id: 3, name: "Butterscotch Crunch", price: 550, category: "Birthday", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400" },
-            { id: 4, name: "Assorted Cupcakes (Box of 6)", price: 350, category: "Cupcakes", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=400" },
-            { id: 5, name: "Party Popper & Candles", price: 150, category: "Add-ons", img: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400" },
-            { id: 6, name: "Fresh Strawberry Gateau", price: 750, category: "Birthday", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=400" }
+            { name: "Dutch Chocolate", price: 500, category: "Birthday", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
+            { name: "Red Velvet", price: 600, category: "Anniversary", img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
+            { name: "Butterscotch", price: 450, category: "Birthday", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" },
+            { name: "Choco Cupcakes (6pcs)", price: 350, category: "Cupcakes", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
+            { name: "Magic Sparkle Candles", price: 50, category: "Add-ons", img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300" },
+            { name: "Birthday Cap & Popper Set", price: 120, category: "Add-ons", img: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300" }
+        ];
+
+        let defaultReviews = [
+            { name: "Priya Das", text: "The Dutch Chocolate cake was super fresh and melted in the mouth! Everyone loved it.", rating: 5 },
+            { name: "Amit Gogoi", text: "Ordered a midnight surprise cake, delivery was right on time and quality is top notch!", rating: 5 }
+        ];
+
+        let defaultCoupons = [
+            { code: "CAKE10", discount: 10 },
+            { code: "PRIYATAM20", discount: 20 }
         ];
 
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
-        let cart = [];
-        let appliedCoupon = null;
-        let currentFilter = 'All';
+        let reviews = JSON.parse(localStorage.getItem('reviews_data')) || defaultReviews;
+        let coupons = JSON.parse(localStorage.getItem('coupons_data')) || defaultCoupons;
+        let cart = JSON.parse(localStorage.getItem('cart_data')) || [];
+        
+        let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
+        let customAnnouncement = localStorage.getItem('site_announcement') || "";
+        let appliedDiscount = 0;
+        let appliedCouponCode = "";
+        let currentFilter = "All";
 
-        window.onload = function() {
-            renderCakes();
-            populateFlavorDropdown();
-            updateCartUI();
-            checkHolidayDate();
-            loadAdminOrders();
-            loadAdminManageProducts();
-        };
+        let clickCount = 0;
+        let clickTimer = null;
 
-        function filterCategory(cat) {
-            currentFilter = cat;
-            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-            event.target.classList.add('active');
-            renderCakes();
+        function playNotificationSound() {
+            if(shopConfig.soundAlert === "OFF") return;
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.8);
+            } catch(e) { console.log("Audio not supported"); }
         }
 
-        function renderCakes() {
-            const grid = document.getElementById('cakeGridContainer');
-            grid.innerHTML = '';
-            let filtered = currentFilter === 'All' ? cakes : cakes.filter(c => c.category === currentFilter);
-            filtered.forEach(cake => {
-                grid.innerHTML += `
-                    <div class="cake-card">
-                        <img src="${cake.img}" alt="${cake.name}">
-                        <div>
-                            <h4>${cake.name}</h4>
-                            <p>₹${cake.price} onwards</p>
-                        </div>
-                        <button class="btn-add-cart" onclick="addToCart(${cake.id})"><i class="fas fa-plus"></i> Add to Bag</button>
-                    </div>
-                `;
-            });
-        }
-
-        function populateFlavorDropdown() {
-            const select = document.getElementById('flavor');
-            select.innerHTML = '';
-            cakes.forEach(cake => {
-                select.innerHTML += `<option value="${cake.name}" data-price="${cake.price}">${cake.name} (Base ₹${cake.price})</option>`;
-            });
-            calculatePrice();
-        }
-
-        function addToCart(cakeId) {
-            const cake = cakes.find(c => c.id === cakeId);
-            if (!cake) return;
-            const existing = cart.find(item => item.id === cakeId);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                cart.push({ id: cake.id, name: cake.name, price: cake.price, qty: 1 });
-            }
-            updateCartUI();
-            showToast(`Added ${cake.name} to cart!`);
-        }
-
-        function updateCartUI() {
-            const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
-            const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            
-            document.getElementById('floatingCartCount').innerText = totalCount;
-            document.getElementById('floatingCartTotal').innerText = `₹${totalPrice}`;
-            document.getElementById('cartModalTotal').innerText = `₹${totalPrice}`;
-
-            const container = document.getElementById('cartItemsContainer');
-            if (cart.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: #94a3b8; font-size: 0.85rem; padding: 20px;">Your shopping bag is empty.</p>`;
-                return;
-            }
-            container.innerHTML = '';
-            cart.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="cart-item-row">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <span style="color: #f472b6;">₹${item.price} × ${item.qty}</span>
-                        </div>
-                        <div class="cart-controls">
-                            <button onclick="changeQty(${index}, -1)">-</button>
-                            <span>${item.qty}</span>
-                            <button onclick="changeQty(${index}, 1)">+</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function changeQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) {
-                cart.splice(index, 1);
-            }
-            updateCartUI();
-        }
-
-        function openCartModal() { document.getElementById('cartModal').style.display = 'flex'; }
-        function closeCartModal() { document.getElementById('cartModal').style.display = 'none'; }
-        function proceedToCheckout() {
-            closeCartModal();
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-
-        function calculatePrice() {
-            const flavorSelect = document.getElementById('flavor');
-            const selectedOption = flavorSelect.options[flavorSelect.selectedIndex];
-            const basePrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) || 650 : 650;
-            
-            const weightSelect = document.getElementById('weight');
-            const multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
-            
-            let timeExtra = 0;
-            const timeSelect = document.getElementById('deliveryTime');
-            if (timeSelect.value.includes('Midnight')) {
-                timeExtra = 150;
-            }
-
-            let total = (basePrice * multiplier) + timeExtra;
-            if (appliedCoupon === 'CAKE10') {
-                total = total * 0.9;
-            }
-            document.getElementById('totalPriceDisplay').innerText = `₹${Math.round(total)}`;
+        function showLiveToast(msg) {
+            let toast = document.getElementById('liveAlertToast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
         function updateLiveCakePreview() {
-            const txt = document.getElementById('cakeText').value.trim();
-            const previewCard = document.getElementById('liveCakePreviewCard');
-            const previewDisplay = document.getElementById('previewTextDisplay');
-            if (txt.length > 0) {
+            let txt = document.getElementById('cakeText').value.trim();
+            let previewCard = document.getElementById('liveCakePreviewCard');
+            let display = document.getElementById('previewTextDisplay');
+            if(txt) {
                 previewCard.style.display = 'block';
-                previewDisplay.innerText = `"${txt}"`;
+                display.innerText = "“" + txt + "”";
             } else {
                 previewCard.style.display = 'none';
             }
         }
 
+        function handleTitleClick() {
+            clickCount++;
+            if(clickCount === 1) {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            } else if(clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                promptAdminPassword();
+            }
+        }
+
+        function promptAdminPassword() {
+            document.getElementById('adminPassInput').value = "";
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
+        function openCartModal() { document.getElementById('cartModal').style.display = 'flex'; renderCartItems(); }
+        function closeCartModal() { document.getElementById('cartModal').style.display = 'none'; }
+        function openTrackerModal() { document.getElementById('trackerModal').style.display = 'flex'; }
+        function closeTrackerModal() { document.getElementById('trackerModal').style.display = 'none'; }
+        function closeInvoiceModal() { document.getElementById('invoiceModal').style.display = 'none'; }
+        function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+        function verifyPassword() {
+            let pass = document.getElementById('adminPassInput').value;
+            let currentPass = shopConfig.adminPass || "admin123";
+            if(pass === currentPass) {
+                closePasswordModal();
+                document.getElementById('adminModal').style.display = 'block';
+                
+                document.getElementById('adminNewPassInput').value = "";
+                document.getElementById('adminSoundToggle').value = shopConfig.soundAlert || "ON";
+                document.getElementById('adminShopName').value = shopConfig.name;
+                document.getElementById('adminWpNum').value = shopConfig.whatsapp;
+                document.getElementById('adminInstaUrl').value = shopConfig.instagram;
+                document.getElementById('adminUpiId').value = shopConfig.upiId;
+                document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
+                document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
+                document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
+                document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit || 999;
+                document.getElementById('adminMidnightFee').value = shopConfig.midnightFee || 100;
+                document.getElementById('adminBlockDate').value = shopConfig.blockedDate || "";
+
+                document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+                loadOrderHistory();
+                loadAdminCakesList();
+            } else {
+                alert("Wrong Password!");
+            }
+        }
+
+        function saveAdminPassword() {
+            let newPass = document.getElementById('adminNewPassInput').value.trim();
+            if(!newPass) {
+                alert("Please enter a valid new password!");
+                return;
+            }
+            shopConfig.adminPass = newPass;
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Admin password updated successfully!");
+            document.getElementById('adminNewPassInput').value = "";
+        }
+
+        function initApp() {
+            document.getElementById('shopTitleText').innerText = shopConfig.name;
+            document.getElementById('pageTitle').innerText = shopConfig.name + " | Premium Bakehouse";
+            document.getElementById('instaLinkBtn').href = shopConfig.instagram;
+            document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
+            document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
+            
+            let mFee = shopConfig.midnightFee || 100;
+            document.getElementById('midnightSlotLabel').innerText = `Midnight Special (11:30 PM) [₹${mFee} Extra]`;
+
+            let qrSource = shopConfig.customQrUrl ? shopConfig.customQrUrl : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${shopConfig.upiId || '6001785308@paytm'}&pn=${encodeURIComponent(shopConfig.name)}`;
+            document.getElementById('qrImageDisplay').src = qrSource;
+            document.getElementById('qrUpiIdText').innerText = "UPI ID: " + (shopConfig.upiId || "6001785308@paytm");
+
+            if(isMaintenance) {
+                document.getElementById('maintenanceScreen').style.display = 'flex';
+            } else {
+                document.getElementById('maintenanceScreen').style.display = 'none';
+            }
+
+            if(customAnnouncement) {
+                let banner = document.getElementById('announcementBanner');
+                banner.innerText = "📢 " + customAnnouncement;
+                banner.style.display = 'block';
+            }
+
+            renderCakes();
+            renderReviews();
+            updateCartUI();
+            calculatePrice();
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            let pills = document.querySelectorAll('.cat-pill');
+            pills.forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCakes();
+        }
+
+        function renderCakes() {
+            let gridHTML = "";
+            let selectHTML = "";
+            let filtered = cakes.filter(c => currentFilter === 'All' || c.category === currentFilter);
+            
+            filtered.forEach((c) => {
+                gridHTML += `
+                    <div class="cake-card">
+                        <div>
+                            <img src="${c.img}" alt="${c.name}" loading="lazy">
+                            <h4>${c.name}</h4>
+                            <p>₹${c.price} ${c.category === 'Add-ons' ? '' : '/ 0.5kg'}</p>
+                        </div>
+                        <button class="btn-add-cart" onclick="addToCart('${c.name}', ${c.price})">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>`;
+            });
+
+            cakes.forEach((c) => {
+                selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price})</option>`;
+            });
+
+            document.getElementById('cakeGridContainer').innerHTML = gridHTML;
+            document.getElementById('flavor').innerHTML = selectHTML;
+            calculatePrice();
+        }
+
+        function renderReviews() {
+            let reviewsHTML = "";
+            reviews.forEach((r) => {
+                let stars = '<i class="fas fa-star"></i>'.repeat(r.rating);
+                reviewsHTML += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-name">${r.name}</span>
+                            <span class="review-stars">${stars}</span>
+                        </div>
+                        <p class="review-text">"${r.text}"</p>
+                    </div>`;
+            });
+            document.getElementById('reviewsContainer').innerHTML = reviewsHTML;
+        }
+
+        function saveShopSettings() {
+            shopConfig.soundAlert = document.getElementById('adminSoundToggle').value;
+            shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
+            shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
+            shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
+            shopConfig.upiId = document.getElementById('adminUpiId').value.trim() || "6001785308@paytm";
+            shopConfig.customQrUrl = document.getElementById('adminCustomQrUrl').value.trim() || "";
+
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Shop & Alarm Settings updated successfully!");
+            initApp();
+        }
+
+        function saveDeliveryConfig() {
+            shopConfig.pincodes = document.getElementById('adminPincodes').value.trim();
+            shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
+            shopConfig.freeDeliveryLimit = parseFloat(document.getElementById('adminFreeDeliveryLimit').value) || 999;
+            shopConfig.midnightFee = parseFloat(document.getElementById('adminMidnightFee').value) || 100;
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Geo-Delivery Rules updated successfully!");
+            initApp();
+        }
+
+        function saveBlockDate() {
+            shopConfig.blockedDate = document.getElementById('adminBlockDate').value;
+            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
+            alert("Date blocked successfully!");
+        }
+
         function checkHolidayDate() {
-            const dateVal = document.getElementById('deliveryDate').value;
-            const msg = document.getElementById('holidayMsg');
-            if (dateVal === '2026-12-31' || dateVal === '2027-01-01') {
-                msg.innerText = "🎉 New Year Eve surge pricing applicable (+₹100).";
+            let selectedDate = document.getElementById('deliveryDate').value;
+            let msg = document.getElementById('holidayMsg');
+            if(shopConfig.blockedDate && selectedDate === shopConfig.blockedDate) {
+                msg.innerText = "❌ Sorry! We are closed or fully booked on this date. Please choose another date.";
+                document.getElementById('deliveryDate').value = "";
             } else {
                 msg.innerText = "";
             }
         }
 
         function checkPincode() {
-            const pin = document.getElementById('pincodeInput').value.trim();
-            const msg = document.getElementById('pincodeMsg');
-            if (pin.length === 6) {
-                msg.innerText = "✅ Delivery available in your area! (Standard Free Delivery)";
-            } else if (pin.length > 0) {
-                msg.innerText = "⚠️ Please enter a valid 6-digit PIN code.";
+            let pin = document.getElementById('pincodeInput').value.trim();
+            let msg = document.getElementById('pincodeMsg');
+            if(pin.length === 6) {
+                let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
+                if(allowed.includes(pin)) {
+                    msg.style.color = "#22c55e";
+                    msg.innerText = "✅ Smart Geo-Check: Delivery available in your area!";
+                } else {
+                    msg.style.color = "#ef4444";
+                    msg.innerText = "❌ Delivery not available for this PIN code.";
+                }
             } else {
                 msg.innerText = "";
             }
+            calculatePrice();
+        }
+
+        function addToCart(name, price) {
+            let existing = cart.find(item => item.name === name);
+            if(existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name: name, price: price, qty: 1 });
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            alert(name + " added to cart!");
+        }
+
+        function updateCartUI() {
+            let totalItems = 0;
+            let totalPriceCalc = 0;
+            cart.forEach(item => {
+                totalItems += item.qty;
+                totalPriceCalc += item.price * item.qty;
+            });
+            document.getElementById('cartCountBadge').innerText = totalItems + (totalItems === 1 ? " Item" : " Items");
+            document.getElementById('cartTotalBadge').innerText = "₹" + totalPriceCalc;
+        }
+
+        function renderCartItems() {
+            let container = document.getElementById('cartItemsList');
+            if(cart.length === 0) {
+                container.innerHTML = `<p style="color: #94a3b8; text-align: center;">Your cart is empty.</p>`;
+                return;
+            }
+            let html = "";
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                html += `
+                    <div class="cart-item-row">
+                        <div>
+                            <b>${item.name}</b><br>
+                            <span style="font-size: 0.75rem; color: #f472b6;">₹${item.price} × ${item.qty} = ₹${itemTotal}</span>
+                        </div>
+                        <div class="cart-controls">
+                            <button onclick="changeQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)">+</button>
+                            <button onclick="removeFromCart(${index})" style="background: rgba(239,68,68,0.3); color:#f87171;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if(cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            renderCartItems();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartUI();
+            renderCartItems();
+        }
+
+        function proceedToCheckout() {
+            closeCartModal();
+            if(cart.length > 0) {
+                document.getElementById('flavor').value = cart[0].name;
+            }
+            window.scrollTo({ top: document.getElementById('flavor').offsetTop - 50, behavior: 'smooth' });
         }
 
         function applyCoupon() {
-            const code = document.getElementById('couponInput').value.trim().toUpperCase();
-            const msg = document.getElementById('couponMsg');
-            if (code === 'CAKE10') {
-                appliedCoupon = 'CAKE10';
-                msg.innerText = "🎉 Coupon applied successfully! 10% OFF.";
-                calculatePrice();
+            let code = document.getElementById('couponInput').value.trim().toUpperCase();
+            let msg = document.getElementById('couponMsg');
+            let found = coupons.find(c => c.code === code);
+
+            if(found) {
+                appliedDiscount = found.discount;
+                appliedCouponCode = found.code;
+                msg.style.color = "#22c55e";
+                msg.innerText = `✅ Coupon '${found.code}' applied! ${found.discount}% OFF`;
             } else {
-                appliedCoupon = null;
-                msg.innerText = "❌ Invalid coupon code.";
-                calculatePrice();
+                appliedDiscount = 0;
+                appliedCouponCode = "";
+                msg.style.color = "#ef4444";
+                msg.innerText = "❌ Invalid Coupon Code";
             }
+            calculatePrice();
         }
 
         function togglePaymentQR() {
-            const method = document.getElementById('paymentMethod').value;
-            const qrBox = document.getElementById('qrCodeContainer');
-            if (method === 'Online') {
+            let method = document.getElementById('paymentMethod').value;
+            let qrBox = document.getElementById('upiQrBox');
+            if(method === 'Online') {
                 qrBox.style.display = 'block';
             } else {
                 qrBox.style.display = 'none';
             }
         }
 
-        function sendWhatsAppOrder() {
-            const flavor = document.getElementById('flavor').value;
-            const weight = document.getElementById('weight').value;
-            const cakeText = document.getElementById('cakeText').value || 'None';
-            const deliveryDate = document.getElementById('deliveryDate').value || 'Not specified';
-            const deliveryTime = document.getElementById('deliveryTime').value;
-            const pincode = document.getElementById('pincodeInput').value || 'Not provided';
-            const paymentMethod = document.getElementById('paymentMethod').value;
-            const utr = document.getElementById('utrInput').value || 'N/A';
-            const totalPrice = document.getElementById('totalPriceDisplay').innerText;
+        function calculatePrice() {
+            let flavorSelect = document.getElementById('flavor');
+            let weightSelect = document.getElementById('weight');
+            
+            if(!flavorSelect.options.length) return;
 
-            const orderId = 'PCS-' + Math.floor(100000 + Math.random() * 900000);
-            const orderData = {
-                orderId: orderId,
-                flavor: flavor,
+            let selectedOption = flavorSelect.options[flavorSelect.selectedIndex];
+            let basePrice = parseFloat(selectedOption.getAttribute('data-price')) || 500;
+            let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
+
+            let total = basePrice * multiplier;
+
+            if(cart.length > 0) {
+                total = 0;
+                cart.forEach(item => {
+                    total += (item.price * multiplier * item.qty);
+                });
+            }
+
+            if(appliedDiscount > 0) {
+                total = total - (total * (appliedDiscount / 100));
+            }
+
+            let deliveryTimeVal = document.getElementById('deliveryTime').value;
+            if(deliveryTimeVal.includes("Midnight")) {
+                total += (shopConfig.midnightFee || 100);
+            }
+
+            let pin = document.getElementById('pincodeInput').value.trim();
+            let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
+            let feeStatusText = "Final Payable Amount";
+
+            if(pin.length === 6 && allowed.includes(pin)) {
+                let limit = shopConfig.freeDeliveryLimit || 999;
+                if(total >= limit) {
+                    feeStatusText = "Final Payable Amount (🎉 Free Delivery Applied!)";
+                } else {
+                    total += (shopConfig.deliveryFee || 50);
+                    feeStatusText = `Final Payable Amount (Includes ₹${shopConfig.deliveryFee || 50} Delivery Fee)`;
+                }
+            }
+            document.getElementById('deliveryFeeStatusText').innerText = feeStatusText;
+
+            let finalTotal = Math.round(total);
+            document.getElementById('totalPrice').innerText = "₹" + finalTotal;
+        }
+
+        function sendWhatsAppOrder() {
+            let flavor = document.getElementById('flavor').value;
+            let weight = document.getElementById('weight').value;
+            let cakeText = document.getElementById('cakeText').value || "None";
+            let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
+            let deliveryTime = document.getElementById('deliveryTime').value;
+            let paymentMethod = document.getElementById('paymentMethod').value;
+            let upiTxnId = document.getElementById('upiTxnId').value.trim();
+            let custName = document.getElementById('custName').value.trim();
+            let custPhone = document.getElementById('custPhone').value.trim();
+            let custAddress = document.getElementById('custAddress').value.trim();
+            let totalPrice = document.getElementById('totalPrice').innerText;
+
+            if(!custName || !custPhone || !custAddress) {
+                alert("Please fill in your Name, Mobile Number and Delivery Address!");
+                return;
+            }
+
+            if(paymentMethod === 'Online' && !upiTxnId) {
+                alert("Please enter your UPI Transaction / UTR Number for online payment verification!");
+                return;
+            }
+
+            let cartSummary = "";
+            if(cart.length > 0) {
+                cartSummary = cart.map(i => `${i.name} (${i.qty} qty)`).join(', ');
+            } else {
+                cartSummary = flavor;
+            }
+
+            playNotificationSound();
+            showLiveToast("🚀 New Order Placed Successfully!");
+
+            let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
+
+            let orderData = {
+                id: orderId,
+                name: custName,
+                phone: custPhone,
+                flavor: cartSummary,
                 weight: weight,
-                cakeText: cakeText,
-                deliveryDate: deliveryDate,
-                deliveryTime: deliveryTime,
-                pincode: pincode,
-                paymentMethod: paymentMethod,
-                utr: utr,
-                totalPrice: totalPrice,
-                status: 'Order Placed (Pending)',
+                message: cakeText,
+                dateTime: `${deliveryDate} (${deliveryTime})`,
+                address: custAddress,
+                price: totalPrice,
+                payment: paymentMethod,
+                status: "Received",
                 timestamp: new Date().toLocaleString()
             };
 
-            // Save order to Firebase Firestore database
+            // Save order to Firebase Firestore Cloud Database
             db.collection("orders").add(orderData)
               .then(() => {
-                  console.log("Order successfully saved to Firebase!");
+                  console.log("Order successfully saved to Firebase Cloud!");
               })
               .catch((error) => {
-                  console.error("Error saving order: ", error);
+                  console.error("Error saving order to Firebase: ", error);
               });
 
-            let msg = `*🍰 NEW CAKE ORDER - PRIYATAM STUDIO*%0A` +
-                      `🆔 Order ID: ${orderId}%0A` +
-                      `🎂 Flavor: ${flavor}%0A` +
-                      `⚖️ Weight: ${weight}%0A` +
-                      `✍️ Text: ${cakeText}%0A` +
-                      `📅 Date: ${deliveryDate}%0A` +
-                      `⏰ Slot: ${deliveryTime}%0A` +
-                      `📍 PIN: ${pincode}%0A` +
-                      `💳 Payment: ${paymentMethod} (UTR: ${utr})%0A` +
-                      `💰 Total: ${totalPrice}`;
+            document.getElementById('invShopName').innerText = shopConfig.name;
+            document.getElementById('invId').innerText = orderId;
+            document.getElementById('invCustName').innerText = custName;
+            document.getElementById('invPhone').innerText = custPhone;
+            document.getElementById('invItems').innerText = cartSummary;
+            document.getElementById('invWeight').innerText = weight;
+            document.getElementById('invMessage').innerText = cakeText;
+            document.getElementById('invDateTime').innerText = `${deliveryDate} | ${deliveryTime}`;
+            document.getElementById('invAddress').innerText = custAddress;
+            document.getElementById('invPayment').innerText = paymentMethod;
+            document.getElementById('invTotal').innerText = totalPrice;
+            document.getElementById('invoiceModal').style.display = 'flex';
 
-            window.open(`https://wa.me/${shopConfig.whatsapp}?text=${msg}`, '_blank');
+            let message = `🍰 *NEW CAKE ORDER - ${shopConfig.name}* 🍰\n\n` +
+                          `*Order ID:* ${orderId}\n` +
+                          `*Items/Cart:* ${cartSummary}\n` +
+                          `*Weight Multiplier:* ${weight}\n` +
+                          `*Message on Cake:* ${cakeText}\n` +
+                          `*Delivery Date:* ${deliveryDate} (${deliveryTime})\n` +
+                          `*Payment Mode:* ${paymentMethod} ${paymentMethod === 'Online' ? '(Txn ID: '+upiTxnId+')' : ''}\n` +
+                          `*Coupon Applied:* ${appliedCouponCode ? appliedCouponCode + ' ('+appliedDiscount+'% off)' : 'None'}\n` +
+                          `*Total Payable:* ${totalPrice}\n\n` +
+                          `*Customer Name:* ${custName}\n` +
+                          `*Mobile:* ${custPhone}\n` +
+                          `*Delivery Address:* ${custAddress}`;
+
+            let encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/91${shopConfig.whatsapp}?text=${encodedMessage}`, '_blank');
         }
 
-        function openTrackerModal() { document.getElementById('trackerModal').style.display = 'flex'; }
-        function closeTrackerModal() { document.getElementById('trackerModal').style.display = 'none'; }
-        
         function searchOrderStatus() {
-            const query = document.getElementById('trackQueryInput').value.trim();
-            const resultBox = document.getElementById('trackResultBox');
-            if(!query) {
-                resultBox.innerHTML = `<span style="color:#ef4444;">Please enter Order ID or Mobile.</span>`;
+            let phone = document.getElementById('trackPhoneInput').value.trim();
+            let resultBox = document.getElementById('trackerResultBox');
+            
+            if(!phone) {
+                resultBox.innerHTML = `<p style="color: #ef4444; text-align: center;">Please enter mobile number.</p>`;
                 return;
             }
-            db.collection("orders").get().then((querySnapshot) => {
-                let found = null;
-                querySnapshot.forEach((doc) => {
-                    let data = doc.data();
-                    if(data.orderId === query || data.pincode === query) {
-                        found = data;
-                    }
-                });
-                if(found) {
-                    resultBox.innerHTML = `
-                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-top:8px;">
-                            <strong>Order:</strong> ${found.orderId}<br>
-                            <strong>Cake:</strong> ${found.flavor} (${found.weight})<br>
-                            <strong>Status:</strong> <span style="color:#22c55e;">${found.status}</span><br>
-                            <strong>Delivery:</strong> ${found.deliveryDate} (${found.deliveryTime})
-                        </div>
-                    `;
-                } else {
-                    resultBox.innerHTML = `<span style="color:#f87171;">No active order found for "${query}".</span>`;
-                }
-            });
-        }
 
-        function handleTitleClick() {
-            window.adminTapCount = (window.adminTapCount || 0) + 1;
-            if (window.adminTapCount >= 5) {
-                window.adminTapCount = 0;
-                promptAdminPassword();
-            }
-        }
-
-        function promptAdminPassword() { document.getElementById('passwordModal').style.display = 'flex'; }
-        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
-
-        function verifyAdminPassword() {
-            const pin = document.getElementById('adminPassInput').value;
-            if (pin === shopConfig.adminPin) {
-                closePasswordModal();
-                document.getElementById('adminModal').style.display = 'flex';
-                loadAdminOrders();
-                loadAdminManageProducts();
-            } else {
-                alert("Incorrect Admin Passcode!");
-            }
-        }
-        function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
-
-        function switchAdminTab(tab) {
-            if(tab === 'orders') {
-                document.getElementById('adminOrdersTab').style.display = 'block';
-                document.getElementById('adminProductsTab').style.display = 'none';
-            } else {
-                document.getElementById('adminOrdersTab').style.display = 'none';
-                document.getElementById('adminProductsTab').style.display = 'block';
-            }
-        }
-
-        function loadAdminOrders() {
-            const list = document.getElementById('adminOrdersList');
-            db.collection("orders").orderBy("timestamp", "desc").get().then((querySnapshot) => {
+            db.collection("orders").where("phone", "==", phone).get().then((querySnapshot) => {
                 if(querySnapshot.empty) {
-                    list.innerHTML = `<p style="text-align:center; color:#94a3b8;">No orders found in cloud database.</p>`;
+                    resultBox.innerHTML = `<p style="color: #ef4444; text-align: center;">No orders found for this mobile number.</p>`;
                     return;
                 }
-                list.innerHTML = '';
+                let html = "";
                 querySnapshot.forEach((doc) => {
                     let o = doc.data();
-                    list.innerHTML += `
-                        <div class="order-item">
-                            <strong>${o.orderId}</strong> - ${o.flavor} (${o.weight})<br>
-                            💰 ${o.totalPrice} | 💳 ${o.paymentMethod}<br>
-                            📅 ${o.deliveryDate} | <span style="color:#38bdf8;">${o.status}</span>
-                        </div>
-                    `;
+                    html += `<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 0.8rem;">
+                        <b>Order ID:</b> ${o.id}<br>
+                        <b>Item:</b> ${o.flavor}<br>
+                        <b>Total:</b> ${o.price}<br>
+                        <b>Status:</b> <span style="color: #22c55e; font-weight: bold;">${o.status}</span>
+                    </div>`;
                 });
-            }).catch(error => {
-                list.innerHTML = `<p style="text-align:center; color:#f87171;">Error loading cloud orders.</p>`;
+                resultBox.innerHTML = html;
+            }).catch((error) => {
+                resultBox.innerHTML = `<p style="color: #ef4444; text-align: center;">Error fetching status.</p>`;
             });
+        }
+
+        function toggleMaintenance() {
+            isMaintenance = !isMaintenance;
+            localStorage.setItem('site_maintenance', isMaintenance);
+            document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+            alert("Maintenance mode is now " + (isMaintenance ? "ON" : "OFF"));
+            initApp();
         }
 
         function addNewCake() {
-            const name = document.getElementById('newCakeName').value.trim();
-            const price = parseFloat(document.getElementById('newCakePrice').value);
-            const img = document.getElementById('newCakeImg').value.trim();
-            const category = document.getElementById('newCakeCat').value;
+            let name = document.getElementById('newCakeName').value.trim();
+            let category = document.getElementById('newCakeCategory').value;
+            let price = parseFloat(document.getElementById('newCakePrice').value);
+            let img = document.getElementById('newCakeImg').value.trim();
 
-            if(!name || !price || !img) {
-                alert("Please fill all cake details!");
+            if(!name || isNaN(price)) {
+                alert("Please enter a valid product name and price!");
+                return;
+            }
+            if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
+
+            cakes.push({ name: name, category: category, price: price, img: img });
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            alert("New Product / Add-on added successfully!");
+            document.getElementById('newCakeName').value = "";
+            document.getElementById('newCakePrice').value = "";
+            document.getElementById('newCakeImg').value = "";
+            initApp();
+            loadAdminCakesList();
+        }
+
+        function loadAdminCakesList() {
+            let container = document.getElementById('adminCakesList');
+            let html = "";
+            cakes.forEach((c, idx) => {
+                html += `<div class="manage-list-item">
+                    <span><b>${c.name}</b> (${c.category} - ₹${c.price})</span>
+                    <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteCake(idx) {
+            if(confirm("Are you sure you want to remove this item?")) {
+                cakes.splice(idx, 1);
+                localStorage.setItem('cakes_data', JSON.stringify(cakes));
+                initApp();
+                loadAdminCakesList();
+            }
+        }
+
+        function addNewCoupon() {
+            let code = document.getElementById('newCouponCode').value.trim().toUpperCase();
+            let disc = parseInt(document.getElementById('newCouponDisc').value);
+
+            if(!code || isNaN(disc)) {
+                alert("Please enter valid coupon code and discount %!");
                 return;
             }
 
-            const newCake = { id: Date.now(), name: name, price: price, category: category, img: img };
-            cakes.push(newCake);
-            localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            
-            document.getElementById('newCakeName').value = '';
-            document.getElementById('newCakePrice').value = '';
-            document.getElementById('newCakeImg').value = '';
-
-            renderCakes();
-            populateFlavorDropdown();
-            loadAdminManageProducts();
-            alert("New cake added successfully!");
+            coupons.push({ code: code, discount: disc });
+            localStorage.setItem('coupons_data', JSON.stringify(coupons));
+            alert("Coupon added successfully!");
+            document.getElementById('newCouponCode').value = "";
+            document.getElementById('newCouponDisc').value = "";
         }
 
-        function loadAdminManageProducts() {
-            const container = document.getElementById('adminManageProductsList');
-            container.innerHTML = '';
-            cakes.forEach((cake, index) => {
-                container.innerHTML += `
-                    <div class="manage-list-item">
-                        <span>${cake.name} (₹${cake.price})</span>
-                        <button onclick="deleteCake(${index})" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer;">Delete</button>
-                    </div>
-                `;
+        function loadOrderHistory() {
+            let container = document.getElementById('orderHistoryContainer');
+            db.collection("orders").orderBy("timestamp", "desc").get().then((querySnapshot) => {
+                if(querySnapshot.empty) {
+                    container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet in cloud database.</p>`;
+                    return;
+                }
+                let html = "";
+                querySnapshot.forEach((doc) => {
+                    let o = doc.data();
+                    let docId = doc.id;
+                    let statusColor = o.status === 'Delivered' ? '#22c55e' : (o.status === 'Baking' ? '#38bdf8' : '#fbbf24');
+                    html += `<div class="order-item">
+                        <b>${o.id} - ${o.name}</b> (${o.phone})<br>
+                        Ordered: ${o.flavor} (${o.price})<br>
+                        Status: <span style="color: ${statusColor}; font-weight: bold;">${o.status}</span>
+                        <div style="display:flex; gap:6px; margin-top:6px;">
+                            <select onchange="updateOrderStatus('${docId}', this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
+                                <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
+                                <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
+                                <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                                <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                            </select>
+                            <button onclick="sendWhatsAppStatusBot('${o.phone}', '${o.id}', '${o.status}')" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Bot"><i class="fab fa-whatsapp"></i> Bot</button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }).catch((error) => {
+                container.innerHTML = `<p style="color: #ef4444; text-align: center;">Error loading orders.</p>`;
             });
         }
 
-        function deleteCake(index) {
-            cakes.splice(index, 1);
-            localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            renderCakes();
-            populateFlavorDropdown();
-            loadAdminManageProducts();
+        function updateOrderStatus(docId, newStatus) {
+            db.collection("orders").doc(docId).update({
+                status: newStatus
+            }).then(() => {
+                loadOrderHistory();
+                alert("Order status updated to: " + newStatus);
+            }).catch((error) => {
+                alert("Error updating status.");
+            });
         }
 
-        function showToast(text) {
-            const toast = document.getElementById('liveAlertToast');
-            document.getElementById('toastMsg').innerText = text;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        function sendWhatsAppStatusBot(phone, orderId, status) {
+            let botMsg = `Hello, update regarding your order *${orderId}* from *${shopConfig.name}*:\nYour order status is now: *${status}* 🍰.\nThank you for choosing us!`;
+            window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(botMsg)}`, '_blank');
         }
+
+        function clearOrders() {
+            if(confirm("Are you sure you want to clear cloud orders history?")) {
+                db.collection("orders").get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        db.collection("orders").doc(doc.id).delete();
+                    });
+                    loadOrderHistory();
+                    alert("Cloud orders cleared.");
+                });
+            }
+        }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
