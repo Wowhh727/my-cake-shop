@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Priyatam Cake Studio | AI Smart Bakehouse</title>
+    <title id="pageTitle">Priyatam Cake Studio | Premium Bakehouse</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -118,30 +118,6 @@
         .cart-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; }
         .cart-badge { background: #fff; color: #ec4899; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
 
-        /* AI Chatbot Widget Button */
-        .ai-chat-btn {
-            position: fixed; bottom: 85px; left: 20px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white;
-            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 22px; box-shadow: 0 5px 20px rgba(139, 92, 246, 0.5);
-            z-index: 90; cursor: pointer; transition: 0.25s; border: none;
-        }
-        .ai-chat-btn:hover { transform: scale(1.1); }
-
-        /* AI Chatbot Modal Box */
-        #aiChatModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); z-index: 20000;
-            align-items: center; justify-content: center; padding: 15px;
-        }
-        .ai-chat-box {
-            background: #1e1b4b; border: 2px solid #8b5cf6; border-radius: 24px;
-            max-width: 380px; width: 100%; padding: 20px; color: #fff;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; height: 450px;
-        }
-        .ai-chat-messages { flex: 1; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        .ai-msg { background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.4); padding: 8px 12px; border-radius: 12px; align-self: flex-start; max-width: 85%; }
-        .user-msg { background: #ec4899; color: #fff; padding: 8px 12px; border-radius: 12px; align-self: flex-end; max-width: 85%; }
-
         /* Reviews Section */
         .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
         .review-card {
@@ -233,7 +209,7 @@
 
         .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 180px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
         .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 0; }
-        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; }
+        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 0.82rem; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
     </style>
@@ -241,28 +217,6 @@
 <body>
 
     <div id="liveAlertToast"><i class="fas fa-bell"></i> <span id="toastMsg">New Order Received!</span></div>
-
-    <!-- AI Support Chatbot Button -->
-    <button class="ai-chat-btn" onclick="openAiChatModal()" title="AI Cake Expert">
-        <i class="fas fa-robot"></i>
-    </button>
-
-    <!-- AI Chatbot Modal -->
-    <div id="aiChatModal">
-        <div class="ai-chat-box">
-            <div class="modal-header">
-                <h3>🤖 Priyatam AI Assistant</h3>
-                <button class="close-btn" onclick="closeAiChatModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="ai-chat-messages" id="aiChatMessagesBox">
-                <div class="ai-msg">Hello! I am your AI Cake Assistant 🎂. Which occasion is your party for, or what flavor are you looking for?</div>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="aiChatInput" placeholder="Type your question..." onkeypress="if(event.key==='Enter') sendAiMessage()">
-                <button onclick="sendAiMessage()" style="background: #8b5cf6; border: none; color: #fff; padding: 0 16px; border-radius: 12px; font-weight: bold; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
 
     <div id="maintenanceScreen">
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
@@ -480,17 +434,8 @@
     <div id="adminModal">
         <div class="admin-box">
             <div class="modal-header">
-                <h3>🤖 Autonomous AI Business Manager</h3>
+                <h3>⚙️ Master Admin Control</h3>
                 <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
-            </div>
-
-            <!-- AI Analytics Dashboard -->
-            <div style="background: rgba(139,92,246,0.15); border: 1px solid #8b5cf6; padding: 14px; border-radius: 16px; margin-bottom: 15px;">
-                <p style="font-size: 0.8rem; color: #c084fc; font-weight: bold;"><i class="fas fa-chart-line"></i> AI Sales & Revenue Intelligence</p>
-                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
-                    <span>Total Orders: <b id="aiStatOrders">0</b></span>
-                    <span>Total Revenue: <b id="aiStatRevenue" style="color: #22c55e;">₹0</b></span>
-                </div>
             </div>
             
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-key"></i> Change Admin Password</h3>
@@ -513,28 +458,25 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Delivery & Free Delivery Rules</h3>
-            <label>Deliverable PIN Codes (Comma separated)</label>
-            <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
-            <label>Standard Delivery Fee (₹)</label>
-            <input type="number" id="adminDeliveryFee" placeholder="50">
-            <label>Free Delivery Threshold Amount (₹)</label>
-            <input type="number" id="adminFreeDeliveryLimit" placeholder="999">
-            <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
+            <!-- Full Product & Cake Customization Manager -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-birthday-cake"></i> Cake & Product Customization</h3>
+            <label>Product Name</label>
+            <input type="text" id="newCakeName" placeholder="e.g. Dutch Chocolate Cake">
+            <label>Category</label>
+            <select id="newCakeCategory">
+                <option value="Birthday">Birthday</option>
+                <option value="Anniversary">Anniversary</option>
+                <option value="Cupcakes">Cupcakes</option>
+                <option value="Add-ons">Party Add-ons</option>
+            </select>
+            <label>Price (₹)</label>
+            <input type="number" id="newCakePrice" placeholder="500">
+            <label>Photo Image Link URL</label>
+            <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
+            <button class="btn-admin-act" onclick="addNewCake()">Add New Product</button>
 
-            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
-
-            <!-- Feature 1: Stock & Inventory Sold Out Toggle -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-box-open"></i> Auto-Stock & "Sold Out" Manager</h3>
-            <div class="order-history-box" id="adminStockList" style="max-height: 150px;"></div>
-
-            <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
-
-            <!-- Feature 3: Automated WhatsApp Re-marketing Reminder -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fab fa-whatsapp"></i> AI WhatsApp Re-marketing Hub</h3>
-            <div class="order-history-box" id="adminRemarketList" style="max-height: 130px;">
-                <p style="color: #64748b; text-align: center;">No customer history for follow-up yet.</p>
-            </div>
+            <label style="margin-top: 14px;">Existing Cakes & Products Management</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 180px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -583,34 +525,6 @@
 
         let clickCount = 0;
         let clickTimer = null;
-
-        // AI Chatbot Logic
-        function openAiChatModal() { document.getElementById('aiChatModal').style.display = 'flex'; }
-        function closeAiChatModal() { document.getElementById('aiChatModal').style.display = 'none'; }
-
-        function sendAiMessage() {
-            let input = document.getElementById('aiChatInput');
-            let txt = input.value.trim();
-            if(!txt) return;
-
-            let box = document.getElementById('aiChatMessagesBox');
-            box.innerHTML += `<div class="user-msg">${txt}</div>`;
-            input.value = "";
-
-            setTimeout(() => {
-                let reply = "I recommend our bestselling **Dutch Chocolate** or **Red Velvet** cake! They are freshly baked everyday. Would you like to add it to your order?";
-                let lower = txt.toLowerCase();
-                if(lower.includes('price') || lower.includes('cost')) {
-                    reply = "Our cakes start at just ₹450 for 0.5kg with free delivery options above ₹999!";
-                } else if(lower.includes('anniversary') || lower.includes('wedding')) {
-                    reply = "For anniversaries, our **Red Velvet** or **Dutch Chocolate** tier cakes are customer favorites!";
-                } else if(lower.includes('eggless')) {
-                    reply = "Yes! All our handcrafted cakes can be made 100% eggless upon request.";
-                }
-                box.innerHTML += `<div class="ai-msg">${reply}</div>`;
-                box.scrollTop = box.scrollHeight;
-            }, 500);
-        }
 
         function playNotificationSound() {
             try {
@@ -672,14 +586,9 @@
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
                 document.getElementById('adminInstaUrl').value = shopConfig.instagram;
                 document.getElementById('adminUpiId').value = shopConfig.upiId;
-                document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
-                document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
-                document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit || 999;
 
-                loadAdminStockList();
-                loadAdminRemarketList();
+                loadAdminCakesList();
                 loadOrderHistory();
-                calculateAiAnalytics();
             } else {
                 alert("Wrong Password!");
             }
@@ -696,7 +605,7 @@
 
         function initApp() {
             document.getElementById('shopTitleText').innerText = shopConfig.name;
-            document.getElementById('pageTitle').innerText = shopConfig.name + " | Smart Bakehouse";
+            document.getElementById('pageTitle').innerText = shopConfig.name + " | Premium Bakehouse";
             document.getElementById('instaLinkBtn').href = shopConfig.instagram;
             document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
             document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
@@ -778,13 +687,73 @@
             initApp();
         }
 
-        function saveDeliveryConfig() {
-            shopConfig.pincodes = document.getElementById('adminPincodes').value.trim();
-            shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
-            shopConfig.freeDeliveryLimit = parseFloat(document.getElementById('adminFreeDeliveryLimit').value) || 999;
-            localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Delivery rules saved!");
+        // Complete Cake & Product Customization Manager
+        function addNewCake() {
+            let name = document.getElementById('newCakeName').value.trim();
+            let category = document.getElementById('newCakeCategory').value;
+            let price = parseFloat(document.getElementById('newCakePrice').value);
+            let img = document.getElementById('newCakeImg').value.trim();
+
+            if(!name || isNaN(price)) {
+                alert("Please enter a valid product name and price!");
+                return;
+            }
+            if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
+
+            cakes.push({ name: name, category: category, price: price, img: img, soldOut: false });
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            alert("Product added successfully!");
+            document.getElementById('newCakeName').value = "";
+            document.getElementById('newCakePrice').value = "";
+            document.getElementById('newCakeImg').value = "";
             initApp();
+            loadAdminCakesList();
+        }
+
+        function loadAdminCakesList() {
+            let container = document.getElementById('adminCakesList');
+            let html = "";
+            cakes.forEach((c, idx) => {
+                html += `<div class="manage-list-item">
+                    <div style="flex:1; overflow:hidden; padding-right:8px;">
+                        <b>${c.name}</b><br>
+                        <span style="font-size:0.72rem; color:#f472b6;">₹${c.price} | ${c.category}</span>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="editCake(${idx})" style="background:#3b82f6; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.72rem;">Edit</button>
+                        <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.72rem;">Del</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function editCake(idx) {
+            let c = cakes[idx];
+            let newName = prompt("Edit Product Name:", c.name);
+            if(newName === null) return;
+            let newPrice = prompt("Edit Price (₹):", c.price);
+            if(newPrice === null) return;
+            let newImg = prompt("Edit Image URL:", c.img);
+            if(newImg === null) return;
+
+            if(newName.trim()) c.name = newName.trim();
+            if(!isNaN(parseFloat(newPrice))) c.price = parseFloat(newPrice);
+            if(newImg.trim()) c.img = newImg.trim();
+
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            alert("Product updated successfully!");
+            initApp();
+            loadAdminCakesList();
+        }
+
+        function deleteCake(idx) {
+            if(confirm("Are you sure you want to delete this product?")) {
+                cakes.splice(idx, 1);
+                localStorage.setItem('cakes_data', JSON.stringify(cakes));
+                initApp();
+                loadAdminCakesList();
+            }
         }
 
         function checkPincode() {
@@ -958,7 +927,7 @@
             let cartSummary = (cart.length > 0) ? cart.map(i => `${i.name} (${i.qty} qty)`).join(', ') : flavor;
 
             playNotificationSound();
-            showLiveToast("🚀 New AI Order Received!");
+            showLiveToast("🚀 New Order Received!");
 
             let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
             let rawNum = totalPrice.replace(/[^0-9]/g, '');
@@ -994,57 +963,6 @@
 
             let message = `🍰 *NEW CAKE ORDER - ${shopConfig.name}* 🍰\n\n*Order ID:* ${orderId}\n*Items:* ${cartSummary}\n*Total:* ${totalPrice}\n*Customer:* ${custName} (${custPhone})\n*Address:* ${custAddress}`;
             window.open(`https://wa.me/91${shopConfig.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        // Feature 1: Inventory Stock Manager
-        function loadAdminStockList() {
-            let container = document.getElementById('adminStockList');
-            let html = "";
-            cakes.forEach((c, idx) => {
-                let statusText = c.soldOut ? "Sold Out" : "In Stock";
-                let btnColor = c.soldOut ? "#22c55e" : "#ef4444";
-                let btnLabel = c.soldOut ? "Mark Available" : "Mark Sold Out";
-                html += `<div class="manage-list-item">
-                    <span><b>${c.name}</b> (${statusText})</span>
-                    <button onclick="toggleSoldOut(${idx})" style="background:${btnColor}; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.75rem;">${btnLabel}</button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function toggleSoldOut(idx) {
-            cakes[idx].soldOut = !cakes[idx].soldOut;
-            localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            loadAdminStockList();
-            initApp();
-        }
-
-        // Feature 3: WhatsApp Re-marketing Hub
-        function loadAdminRemarketList() {
-            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
-            let container = document.getElementById('adminRemarketList');
-            if(orders.length === 0) {
-                container.innerHTML = `<p style="color: #64748b; text-align: center;">No customer history yet.</p>`;
-                return;
-            }
-            let html = "";
-            orders.forEach(o => {
-                let remarketMsg = `Hi ${o.name}! Hope you enjoyed your cake from ${shopConfig.name}. Planning another celebration soon? Get 10% off on your next order!`;
-                html += `<div class="manage-list-item">
-                    <span><b>${o.name}</b> (${o.phone})</span>
-                    <button onclick="window.open('https://wa.me/91${o.phone}?text=${encodeURIComponent(remarketMsg)}', '_blank')" style="background:#25D366; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.75rem;"><i class="fab fa-whatsapp"></i> Follow-up</button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        // Feature 4: AI Analytics Dashboard
-        function calculateAiAnalytics() {
-            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
-            let totalRev = 0;
-            orders.forEach(o => { totalRev += (o.rawPrice || 500); });
-            document.getElementById('aiStatOrders').innerText = orders.length;
-            document.getElementById('aiStatRevenue').innerText = "₹" + totalRev;
         }
 
         function searchOrderStatus() {
@@ -1098,7 +1016,6 @@
             if(confirm("Clear order history?")) {
                 localStorage.removeItem('shop_orders');
                 loadOrderHistory();
-                calculateAiAnalytics();
             }
         }
 
