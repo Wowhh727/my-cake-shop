@@ -84,6 +84,18 @@
         .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
         .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; }
 
+        /* Testimonials Section Styles */
+        .reviews-container { display: flex; flex-direction: column; gap: 12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+        .review-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px; padding: 14px; transition: 0.3s;
+        }
+        .review-card:hover { border-color: rgba(244, 114, 182, 0.3); background: rgba(255, 255, 255, 0.05); }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .review-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
+        .review-stars { color: #fbbf24; font-size: 0.75rem; }
+        .review-text { font-size: 0.82rem; color: #cbd5e1; line-height: 1.4; }
+
         label { font-size: 0.8rem; font-weight: 600; color: #cbd5e1; display: block; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         select, input, textarea {
@@ -200,6 +212,12 @@
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
 
+        <!-- Customer Testimonials / Reviews Section -->
+        <div class="glass-card">
+            <h3 class="section-title"><i class="fas fa-star" style="color: #fbbf24;"></i> Happy Customers</h3>
+            <div class="reviews-container" id="reviewsContainer"></div>
+        </div>
+
         <!-- Customization Form Card -->
         <div class="glass-card">
             <h2 class="section-title"><i class="fas fa-edit"></i> Custom Order Form</h2>
@@ -294,6 +312,16 @@
             <button class="btn-admin-act" onclick="addNewCake()">Add / Update Product</button>
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
+            <h3 style="font-size: 1.05rem; color: #38bdf8; margin-bottom: 5px;"><i class="fas fa-star"></i> Add Customer Review</h3>
+            <label>Customer Name</label>
+            <input type="text" id="reviewName" placeholder="e.g. Rahul Sharma">
+            <label>Review Comment</label>
+            <input type="text" id="reviewText" placeholder="e.g. Super fresh and delicious cake!">
+            <label>Rating (1 to 5 Stars)</label>
+            <input type="number" id="reviewRating" min="1" max="5" value="5">
+            <button class="btn-admin-act" onclick="addNewReview()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Add Review</button>
+
+            <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
             <label>Announcement Notice Message</label>
             <input type="text" id="announcementInput" placeholder="Enter announcement text...">
             <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Update Announcement</button>
@@ -315,7 +343,13 @@
             { name: "Fresh Fruit Cake", price: 550, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300" }
         ];
 
+        let defaultReviews = [
+            { name: "Priya Das", text: "The Dutch Chocolate cake was super fresh and melted in the mouth! Everyone loved it.", rating: 5 },
+            { name: "Amit Gogoi", text: "Ordered a midnight surprise cake, delivery was right on time and quality is top notch!", rating: 5 }
+        ];
+
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
+        let reviews = JSON.parse(localStorage.getItem('reviews_data')) || defaultReviews;
         let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
         let customAnnouncement = localStorage.getItem('site_announcement') || "";
 
@@ -371,6 +405,7 @@
                 banner.style.display = 'block';
             }
 
+            // Render Cakes Grid
             let gridHTML = "";
             let selectHTML = "";
             cakes.forEach((c) => {
@@ -384,6 +419,22 @@
             });
             document.getElementById('cakeGridContainer').innerHTML = gridHTML;
             document.getElementById('flavor').innerHTML = selectHTML;
+
+            // Render Reviews
+            let reviewsHTML = "";
+            reviews.forEach((r) => {
+                let stars = '<i class="fas fa-star"></i>'.repeat(r.rating);
+                reviewsHTML += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="review-name">${r.name}</span>
+                            <span class="review-stars">${stars}</span>
+                        </div>
+                        <p class="review-text">"${r.text}"</p>
+                    </div>`;
+            });
+            document.getElementById('reviewsContainer').innerHTML = reviewsHTML;
+
             calculatePrice();
         }
 
@@ -479,6 +530,27 @@
             document.getElementById('newCakePrice').value = "";
             document.getElementById('newCakeImg').value = "";
             
+            initApp();
+        }
+
+        function addNewReview() {
+            let name = document.getElementById('reviewName').value.trim();
+            let text = document.getElementById('reviewText').value.trim();
+            let rating = parseInt(document.getElementById('reviewRating').value) || 5;
+
+            if(!name || !text) {
+                alert("Please enter customer name and review text!");
+                return;
+            }
+
+            reviews.unshift({ name: name, text: text, rating: rating });
+            localStorage.setItem('reviews_data', JSON.stringify(reviews));
+            alert("New Review added successfully!");
+
+            document.getElementById('reviewName').value = "";
+            document.getElementById('reviewText').value = "";
+            document.getElementById('reviewRating').value = "5";
+
             initApp();
         }
 
