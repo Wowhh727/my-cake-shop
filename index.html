@@ -108,13 +108,12 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
             z-index: 10000; align-items: center; justify-content: center; padding: 20px;
-            animation: fadeIn 0.3s ease-in-out;
         }
         .pass-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a);
             border: 2px solid rgba(244, 114, 182, 0.4);
             border-radius: 24px; max-width: 360px; width: 100%; padding: 25px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(244, 114, 182, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
         }
 
         /* ADMIN PANEL MODAL */
@@ -122,38 +121,25 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
             z-index: 10000; overflow-y: auto; padding: 30px 15px;
-            animation: fadeIn 0.3s ease-in-out;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
         .admin-box {
             background: linear-gradient(145deg, #1e1b4b, #0f172a);
             border: 2px solid rgba(244, 114, 182, 0.4);
             border-radius: 28px; max-width: 480px; margin: 20px auto; padding: 28px; color: #fff;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(244, 114, 182, 0.15);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
         }
-
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
         .admin-header h2 { font-family: 'Outfit'; font-size: 1.4rem; color: #f472b6; }
         
         .btn-admin-act {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; padding: 14px 18px; border-radius: 14px;
-            font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%; transition: 0.2s;
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+            font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%;
         }
-        .btn-admin-act:active { transform: scale(0.97); }
-
         .admin-close { 
             background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; 
             width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-weight: 700;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
-        .admin-close:hover { background: #ef4444; color: white; }
-
         .footer-note { text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 25px; }
     </style>
 </head>
@@ -244,7 +230,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- CUSTOM STYLISH PASSWORD POPUP -->
+    <!-- CUSTOM PASSWORD MODAL -->
     <div id="passwordModal">
         <div class="pass-box">
             <h3 style="color: #f472b6; margin-bottom: 10px; font-family: 'Outfit';">🔒 Admin Access</h3>
@@ -371,7 +357,7 @@
 
         function calculatePrice() {
             let flavorSelect = document.getElementById('flavor');
-            if(flavorSelect.options.length === 0) return;
+            if(!flavorSelect || flavorSelect.options.length === 0) return;
             let basePrice = parseInt(flavorSelect.options[flavorSelect.selectedIndex].getAttribute('data-price'));
             let weightSelect = document.getElementById('weight');
             let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier'));
@@ -390,4 +376,17 @@
         function addNewCake() {
             let name = document.getElementById('newCakeName').value;
             let price = document.getElementById('newCakePrice').value;
-            let img = document.getElementById('new
+            let img = document.getElementById('newCakeImg').value;
+
+            if(!name || !price || !img) { alert("Please fill all details!"); return; }
+
+            cakes.push({ name, price: parseInt(price), img });
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            alert("New Cake Product Added Successfully!");
+            closeAdminModal();
+            initApp();
+        }
+
+        function updateAnnouncement() {
+            let msg = document.getElementById('announcementInput').value;
+            let banner = document.getElementById('an
