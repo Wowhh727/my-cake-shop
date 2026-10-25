@@ -3,111 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal Cake Studio - Premium Bakery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Royal Cake Studio | Premium Bakehouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background: #fff5f7; color: #333; padding-bottom: 40px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #31103f 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+
+        /* Glowing Orbs in Background */
+        .bg-orb-1 {
+            position: fixed; top: -100px; left: -100px; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(236,72,153,0.4) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%; z-index: 0; pointer-events: none;
+        }
+        .bg-orb-2 {
+            position: fixed; bottom: 5px; right: -100px; width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(99,102,241,0.35) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%; z-index: 0; pointer-events: none;
+        }
+
         header {
-            background: linear-gradient(135deg, #ff4e50, #f9d423);
-            color: white; text-align: center; padding: 35px 20px;
-            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 25px rgba(255, 78, 80, 0.2);
+            position: relative; z-index: 1; text-align: center; padding: 40px 20px 20px;
         }
-        header h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 8px; }
-        header p { font-size: 0.95rem; opacity: 0.95; font-weight: 500; }
-
-        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
-
-        .card {
-            background: white; border-radius: 24px; padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px;
-            border: 1px solid #ffe6eb;
+        .badge {
+            display: inline-block; background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 30px;
+            padding: 6px 16px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1.5px; color: #f472b6; margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(236,72,153,0.2);
         }
-
-        .section-title { font-size: 1.3rem; color: #ff4e50; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-
-        /* Gallery Preview */
-        .cake-preview-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px;
+        header h1 {
+            font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #f472b6, #38bdf8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
-        .cake-thumb {
-            border-radius: 16px; overflow: hidden; height: 110px; position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); border: 2px solid transparent; transition: 0.3s;
-        }
-        .cake-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .cake-thumb span {
-            position: absolute; bottom: 0; background: rgba(0,0,0,0.6); color: white;
-            width: 100%; font-size: 0.75rem; text-align: center; padding: 3px; font-weight: 600;
+        header p { font-size: 0.95rem; color: #94a3b8; font-weight: 500; }
+
+        .container { max-width: 480px; margin: 20px auto; padding: 0 16px; position: relative; z-index: 1; }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px; padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        label { font-size: 0.85rem; font-weight: 600; color: #444; display: block; margin: 14px 0 6px; }
-        
+        .section-title {
+            font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700;
+            color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Cake Grid Cards */
+        .cake-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 10px;
+        }
+        .cake-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px; overflow: hidden; text-align: center;
+            padding: 10px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .cake-card:hover, .cake-card.active {
+            border-color: #f472b6; background: rgba(244, 114, 182, 0.1);
+            transform: translateY(-3px); box-shadow: 0 10px 20px rgba(244, 114, 182, 0.2);
+        }
+        .cake-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+        .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
+        .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; }
+
+        /* Form Inputs */
+        label { font-size: 0.8rem; font-weight: 600; color: #cbd5e1; display: block; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
         select, input, textarea {
             width: 100%; padding: 14px 16px; border-radius: 14px;
-            border: 1.5px solid #eee; background: #fafafa; font-size: 0.95rem;
-            outline: none; transition: 0.3s; color: #333;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.6);
+            color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
         }
-        select:focus, input:focus, textarea:focus { border-color: #ff4e50; background: #fff; box-shadow: 0 0 0 4px rgba(255, 78, 80, 0.1); }
+        select option { background: #0f172a; color: #fff; }
+        select:focus, input:focus, textarea:focus {
+            border-color: #f472b6;
+            box-shadow: 0 0 15px rgba(244, 114, 182, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+        }
 
+        /* Modern Price Box */
         .price-box {
-            background: linear-gradient(135deg, #fff0f3, #ffe3e8); border: 2px dashed #ff4e50; border-radius: 18px;
-            padding: 18px; text-align: center; margin-top: 25px;
+            background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(99,102,241,0.15));
+            border: 1px solid rgba(244, 114, 182, 0.3);
+            border-radius: 20px; padding: 20px; text-align: center; margin-top: 25px;
+            position: relative; overflow: hidden;
         }
-        .price-box p { font-size: 0.85rem; color: #666; font-weight: 500; }
-        .price-box span { font-size: 2rem; font-weight: 700; color: #ff4e50; }
+        .price-box p { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .price-box span {
+            font-family: 'Outfit', sans-serif; font-size: 2.4rem; font-weight: 800;
+            background: linear-gradient(to right, #f472b6, #38bdf8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: block; margin-top: 4px;
+        }
 
+        /* Glowing Pulse Order Button */
         .btn-order {
-            width: 100%; background: linear-gradient(135deg, #25D366, #1ebe5d); color: white; border: none;
-            padding: 16px; border-radius: 16px; font-size: 1.1rem; font-weight: 700;
+            width: 100%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white; border: none; padding: 18px; border-radius: 16px;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-top: 20px; cursor: pointer; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
-            transition: 0.2s;
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
+            animation: pulse-glow 2s infinite; transition: 0.2s;
         }
         .btn-order:active { transform: scale(0.97); }
 
-        .footer-note { text-align: center; font-size: 0.8rem; color: #888; margin-top: 15px; }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8); }
+            100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
+        }
+
+        .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
     </style>
 </head>
 <body>
 
+    <div class="bg-orb-1"></div>
+    <div class="bg-orb-2"></div>
+
     <header>
-        <h1>🎂 Royal Cake Studio</h1>
-        <p>Fresh, Delicious & Customized Cakes Delivered Fresh</p>
+        <div class="badge">✨ Freshly Baked Everyday</div>
+        <h1>Royal Cake Studio</h1>
+        <p>Order Handcrafted Custom Cakes in Seconds</p>
     </header>
 
     <div class="container">
         
-        <!-- Popular Cakes Gallery Preview -->
-        <div class="card" style="padding: 18px;">
-            <h3 class="section-title" style="font-size: 1.1rem; margin-bottom: 12px;">✨ Our Special Cakes</h3>
-            <div class="cake-preview-grid">
-                <div class="cake-thumb">
-                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" alt="Chocolate Cake">
-                    <span>Dutch Chocolate</span>
+        <!-- Popular Cakes Gallery Grid -->
+        <div class="glass-card">
+            <h3 class="section-title">🎂 Popular Flavors</h3>
+            <div class="cake-grid">
+                <div class="cake-card" onclick="selectCake('Dutch Chocolate', 500)">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" alt="Chocolate">
+                    <h4>Dutch Chocolate</h4>
+                    <p>₹500 / 0.5kg</p>
                 </div>
-                <div class="cake-thumb">
+                <div class="cake-card" onclick="selectCake('Red Velvet', 600)">
                     <img src="https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" alt="Red Velvet">
-                    <span>Red Velvet</span>
+                    <h4>Red Velvet</h4>
+                    <p>₹600 / 0.5kg</p>
                 </div>
-                <div class="cake-thumb">
+                <div class="cake-card" onclick="selectCake('Butterscotch', 450)">
                     <img src="https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" alt="Butterscotch">
-                    <span>Butterscotch</span>
+                    <h4>Butterscotch</h4>
+                    <p>₹450 / 0.5kg</p>
                 </div>
-                <div class="cake-thumb">
+                <div class="cake-card" onclick="selectCake('Fresh Fruit Cake', 550)">
                     <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300" alt="Fruit Cake">
-                    <span>Fresh Fruit</span>
+                    <h4>Fresh Fruit</h4>
+                    <p>₹550 / 0.5kg</p>
                 </div>
             </div>
         </div>
 
-        <!-- Order Form Card -->
-        <div class="card">
-            <h2 class="section-title">🛒 Customize & Order</h2>
+        <!-- Customization Form Card -->
+        <div class="glass-card">
+            <h2 class="section-title">✍️ Custom Order</h2>
 
             <!-- Cake Type -->
-            <label>Select Cake Flavor</label>
+            <label>Selected Flavor</label>
             <select id="flavor" onchange="calculatePrice()">
                 <option value="Dutch Chocolate" data-price="500">Dutch Chocolate (₹500 / 0.5kg)</option>
                 <option value="Vanilla Strawberry" data-price="450">Vanilla Strawberry (₹450 / 0.5kg)</option>
@@ -125,15 +198,15 @@
                 <option value="2 kg" data-multiplier="3.6">2 kg (Party Pack)</option>
             </select>
 
-            <!-- Message on Cake -->
-            <label>Text on Cake (Optional)</label>
+            <!-- Text on Cake -->
+            <label>Message on Cake</label>
             <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Rahul!">
 
-            <!-- Delivery Date & Time -->
+            <!-- Date & Time -->
             <label>Delivery Date</label>
             <input type="date" id="deliveryDate">
 
-            <label>Preferred Time Slot</label>
+            <label>Delivery Time Slot</label>
             <select id="deliveryTime">
                 <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
                 <option value="Afternoon (2 PM - 5 PM)">Afternoon (2 PM - 5 PM)</option>
@@ -143,27 +216,38 @@
 
             <!-- Customer Details -->
             <label>Your Name</label>
-            <input type="text" id="custName" placeholder="Aapka poora naam">
+            <input type="text" id="custName" placeholder="Enter your full name">
 
-            <label>Delivery Address & Landmark</label>
-            <textarea id="custAddress" rows="2" placeholder="House no, Colony, Landmark"></textarea>
+            <label>Delivery Address</label>
+            <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
 
             <!-- Total Price -->
             <div class="price-box">
-                <p>Total Estimated Amount</p>
+                <p>Estimated Total Amount</p>
                 <span id="totalPrice">₹500</span>
             </div>
 
-            <!-- WhatsApp Button -->
+            <!-- Glowing Order Button -->
             <button class="btn-order" onclick="sendWhatsAppOrder()">
-                📱 Send Order via WhatsApp
+                🚀 Send WhatsApp Order
             </button>
         </div>
-        
-        <p class="footer-note">⚡ Fast & Fresh Home Delivery Available</p>
+
+        <p class="footer-text">🔒 100% Safe Direct WhatsApp Ordering</p>
     </div>
 
     <script>
+        function selectCake(flavorName, price) {
+            let flavorSelect = document.getElementById('flavor');
+            for(let i=0; i < flavorSelect.options.length; i++) {
+                if(flavorSelect.options[i].value === flavorName) {
+                    flavorSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            calculatePrice();
+        }
+
         function calculatePrice() {
             let flavorSelect = document.getElementById('flavor');
             let basePrice = parseInt(flavorSelect.options[flavorSelect.selectedIndex].getAttribute('data-price'));
@@ -176,7 +260,7 @@
         }
 
         function sendWhatsAppOrder() {
-            // ⚠️ APNA WHATSAPP NUMBER YAHAN CHANGE KAREIN (e.g., 919876543210)
+            // ⚠️ CHANGE YOUR WHATSAPP NUMBER HERE
             let shopPhoneNumber = "919876543210";
 
             let flavor = document.getElementById('flavor').value;
@@ -189,7 +273,7 @@
             let price = document.getElementById('totalPrice').innerText;
 
             if(!name || !address || !date) {
-                alert("Kripya Naam, Address aur Delivery Date zaroor bharein!");
+                alert("Please fill your Name, Address and Delivery Date!");
                 return;
             }
 
