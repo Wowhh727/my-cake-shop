@@ -76,7 +76,6 @@
             color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
         }
 
-        /* Category Filter Pills */
         .category-filter { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; scrollbar-width: none; }
         .category-filter::-webkit-scrollbar { display: none; }
         .cat-pill {
@@ -247,6 +246,7 @@
                 <div class="cat-pill" onclick="filterCategory('Birthday')">Birthday</div>
                 <div class="cat-pill" onclick="filterCategory('Anniversary')">Anniversary</div>
                 <div class="cat-pill" onclick="filterCategory('Cupcakes')">Cupcakes</div>
+                <div class="cat-pill" onclick="filterCategory('Add-ons')">Party Add-ons</div>
             </div>
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
@@ -280,11 +280,11 @@
             <p id="holidayMsg" style="font-size: 0.75rem; color: #ef4444; margin-top: 4px;"></p>
 
             <label>Delivery Time Slot</label>
-            <select id="deliveryTime">
+            <select id="deliveryTime" onchange="calculatePrice()">
                 <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
                 <option value="Afternoon (2 PM - 5 PM)">Afternoon (2 PM - 5 PM)</option>
                 <option value="Evening (6 PM - 9 PM)">Evening (6 PM - 9 PM)</option>
-                <option value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
+                <option value="Midnight Special (11:30 PM)" data-extra="100">Midnight Special (11:30 PM) [₹100 Extra]</option>
             </select>
 
             <label>PIN Code (Delivery Area Check)</label>
@@ -468,22 +468,23 @@
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
             <!-- 5. Products & Category Manager -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add / Remove Products</h3>
-            <label>Cake Name</label>
-            <input type="text" id="newCakeName" placeholder="e.g. Pineapple Delight">
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add / Remove Products & Add-ons</h3>
+            <label>Product Name</label>
+            <input type="text" id="newCakeName" placeholder="e.g. Magic Candle or Pineapple Cake">
             <label>Category</label>
             <select id="newCakeCategory">
                 <option value="Birthday">Birthday</option>
                 <option value="Anniversary">Anniversary</option>
                 <option value="Cupcakes">Cupcakes</option>
+                <option value="Add-ons">Party Add-ons</option>
             </select>
-            <label>Base Price (₹ / 0.5kg)</label>
+            <label>Base Price (₹)</label>
             <input type="number" id="newCakePrice" placeholder="450">
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
             <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
-            <label style="margin-top: 12px;">Existing Cakes Management</label>
+            <label style="margin-top: 12px;">Existing Products Management</label>
             <div class="order-history-box" id="adminCakesList" style="max-height: 120px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
@@ -524,7 +525,9 @@
             { name: "Dutch Chocolate", price: 500, category: "Birthday", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
             { name: "Red Velvet", price: 600, category: "Anniversary", img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
             { name: "Butterscotch", price: 450, category: "Birthday", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" },
-            { name: "Choco Cupcakes (6pcs)", price: 350, category: "Cupcakes", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" }
+            { name: "Choco Cupcakes (6pcs)", price: 350, category: "Cupcakes", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
+            { name: "Magic Sparkle Candles", price: 50, category: "Add-ons", img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300" },
+            { name: "Birthday Cap & Popper Set", price: 120, category: "Add-ons", img: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300" }
         ];
 
         let defaultReviews = [
@@ -550,6 +553,24 @@
 
         let clickCount = 0;
         let clickTimer = null;
+
+        // Audio notification beep sound using Web Audio API
+        function playNotificationSound() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5 note
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) { console.log("Audio not supported"); }
+        }
 
         function handleTitleClick() {
             clickCount++;
@@ -646,7 +667,7 @@
                         <div>
                             <img src="${c.img}" alt="${c.name}" loading="lazy">
                             <h4>${c.name}</h4>
-                            <p>₹${c.price} / 0.5kg</p>
+                            <p>₹${c.price} ${c.category === 'Add-ons' ? '' : '/ 0.5kg'}</p>
                         </div>
                         <button class="btn-add-cart" onclick="addToCart('${c.name}', ${c.price})">
                             <i class="fas fa-cart-plus"></i> Add to Cart
@@ -655,7 +676,7 @@
             });
 
             cakes.forEach((c) => {
-                selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price} / 0.5kg)</option>`;
+                selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price})</option>`;
             });
 
             document.getElementById('cakeGridContainer').innerHTML = gridHTML;
@@ -859,6 +880,12 @@
                 total = total - (total * (appliedDiscount / 100));
             }
 
+            // Check midnight delivery extra charge
+            let timeSelect = document.getElementById('deliveryTime');
+            let timeOpt = timeSelect.options[timeSelect.selectedIndex];
+            let midnightExtra = parseFloat(timeOpt.getAttribute('data-extra')) || 0;
+            total += midnightExtra;
+
             // Add delivery charge if pincode entered
             let pin = document.getElementById('pincodeInput').value.trim();
             let allowed = shopConfig.pincodes.split(',').map(p => p.trim());
@@ -899,6 +926,8 @@
             } else {
                 cartSummary = flavor;
             }
+
+            playNotificationSound();
 
             let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
 
@@ -990,7 +1019,7 @@
             let img = document.getElementById('newCakeImg').value.trim();
 
             if(!name || isNaN(price)) {
-                alert("Please enter a valid cake name and price!");
+                alert("Please enter a valid product name and price!");
                 return;
             }
             if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
