@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal Cake Studio | Premium Bakehouse</title>
+    <title>Royal Cake Studio | Premium Handcrafted Bakehouse</title>
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         
@@ -14,20 +16,22 @@
             color: #f8fafc; min-height: 100vh; padding-bottom: 70px; overflow-x: hidden;
         }
 
+        /* Ambient Orbs */
         .bg-orb-1 {
-            position: fixed; top: -100px; left: -100px; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(236,72,153,0.4) 0%, rgba(0,0,0,0) 70%);
+            position: fixed; top: -100px; left: -100px; width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(236,72,153,0.35) 0%, rgba(0,0,0,0) 70%);
             border-radius: 50%; z-index: 0; pointer-events: none;
         }
         .bg-orb-2 {
-            position: fixed; bottom: 5px; right: -100px; width: 350px; height: 350px;
-            background: radial-gradient(circle, rgba(99,102,241,0.35) 0%, rgba(0,0,0,0) 70%);
+            position: fixed; bottom: -50px; right: -100px; width: 380px; height: 380px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, rgba(0,0,0,0) 70%);
             border-radius: 50%; z-index: 0; pointer-events: none;
         }
 
         #announcementBanner {
             background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; text-align: center;
-            padding: 8px; font-size: 0.85rem; font-weight: 700; display: none;
+            padding: 10px; font-size: 0.85rem; font-weight: 700; display: none;
+            box-shadow: 0 4px 15px rgba(236,72,153,0.3);
         }
 
         #maintenanceScreen {
@@ -39,70 +43,100 @@
 
         header { position: relative; z-index: 1; text-align: center; padding: 30px 20px 15px; }
         .badge {
-            display: inline-block; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; padding: 6px 16px;
+            display: inline-block; background: rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.18); border-radius: 30px; padding: 6px 16px;
             font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #f472b6; margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
         header h1 {
-            font-family: 'Outfit', sans-serif; font-size: 2.3rem; font-weight: 800;
+            font-family: 'Outfit', sans-serif; font-size: 2.4rem; font-weight: 800;
             background: linear-gradient(to right, #ffffff, #f472b6, #38bdf8);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
-            cursor: pointer; user-select: none;
+            cursor: pointer; user-select: none; transition: transform 0.2s;
         }
+        header h1:active { transform: scale(0.98); }
+        header p { color: #94a3b8; font-size: 0.95rem; }
 
-        .social-bar { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .social-bar { display: flex; justify-content: center; gap: 12px; margin-top: 15px; }
         .social-btn {
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 8px 16px; border-radius: 20px; color: #fff; font-size: 0.85rem; font-weight: 600;
+            padding: 8px 18px; border-radius: 20px; color: #fff; font-size: 0.85rem; font-weight: 600;
             text-decoration: none; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
+        .social-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
 
         .container { max-width: 480px; margin: 20px auto; padding: 0 16px; position: relative; z-index: 1; }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px; padding: 24px; margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px; padding: 22px; margin-bottom: 24px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .section-title { font-family: 'Outfit'; font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-family: 'Outfit'; font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: #f472b6; }
 
-        .cake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        /* Cake Grid */
+        .cake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
         .cake-card {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px; overflow: hidden; text-align: center; padding: 10px; cursor: pointer; transition: 0.3s;
+            border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; cursor: pointer; transition: all 0.3s ease;
+            position: relative;
         }
-        .cake-card:hover { border-color: #f472b6; background: rgba(244, 114, 182, 0.1); transform: translateY(-3px); }
-        .cake-card img { width: 100%; height: 95px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
-        .cake-card h4 { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
-        .cake-card p { font-size: 0.75rem; color: #f472b6; font-weight: 600; }
+        .cake-card:hover, .cake-card.selected { 
+            border-color: #f472b6; background: rgba(244, 114, 182, 0.12); transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(244, 114, 182, 0.15);
+        }
+        .cake-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+        .cake-card h4 { font-size: 0.9rem; font-weight: 700; color: #f8fafc; margin-bottom: 2px; }
+        .cake-card p { font-size: 0.78rem; color: #f472b6; font-weight: 700; }
 
-        label { font-size: 0.8rem; font-weight: 600; color: #cbd5e1; display: block; margin: 16px 0 6px; text-transform: uppercase; }
+        /* Form Controls */
+        label { font-size: 0.78rem; font-weight: 700; color: #cbd5e1; display: block; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         select, input, textarea {
             width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s;
+            background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 0.95rem; outline: none; transition: all 0.3s;
         }
+        select:focus, input:focus, textarea:focus { border-color: #f472b6; box-shadow: 0 0 12px rgba(244,114,182,0.3); }
         select option { background: #0f172a; color: #fff; }
+
+        /* Reviews Carousel */
+        .reviews-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+        .reviews-container::-webkit-scrollbar { display: none; }
+        .review-card {
+            flex: 0 0 85%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px; padding: 14px; scroll-snap-align: start;
+        }
+        .review-stars { color: #fbbf24; font-size: 0.8rem; margin-bottom: 6px; }
+        .review-text { font-size: 0.82rem; color: #e2e8f0; font-style: italic; margin-bottom: 8px; line-height: 1.4; }
+        .review-user { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
 
         .price-box {
             background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(99,102,241,0.15));
-            border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 20px; padding: 20px; text-align: center; margin-top: 25px;
+            border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 20px; padding: 18px; text-align: center; margin-top: 25px;
         }
+        .price-box p { font-size: 0.85rem; color: #cbd5e1; font-weight: 600; }
         .price-box span { font-family: 'Outfit'; font-size: 2.4rem; font-weight: 800; color: #f472b6; }
 
         .btn-order {
             width: 100%; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none;
             padding: 18px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; cursor: pointer; margin-top: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
+            display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+        .btn-order:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(34, 197, 94, 0.6); }
+        .btn-order:active { transform: scale(0.98); }
 
         .floating-support {
             position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white;
             width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; font-size: 28px; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5); z-index: 90;
+            text-decoration: none; transition: transform 0.3s ease;
         }
+        .floating-support:hover { transform: scale(1.1); }
 
-        /* HIDDEN ADMIN PANEL MODAL */
+        /* Admin Panel Modal */
         #adminModal {
             display: none; position: fixed; top: 0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000;
@@ -110,16 +144,16 @@
         }
         .admin-box {
             background: #1e1b4b; border: 1px solid #f472b6; border-radius: 24px; max-width: 480px;
-            margin: 30px auto; padding: 25px; color: #fff;
+            margin: 30px auto; padding: 25px; color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-admin-act {
-            background: #ec4899; color: white; border: none; padding: 10px 16px; border-radius: 10px;
-            font-weight: 700; cursor: pointer; margin-top: 10px; width: 100%;
+            background: #ec4899; color: white; border: none; padding: 12px 16px; border-radius: 12px;
+            font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%; transition: background 0.3s;
         }
-        .admin-close { background: #ef4444; border:none; color:white; padding:5px 12px; border-radius:8px; cursor:pointer; }
+        .admin-close { background: #ef4444; border:none; color:white; padding:6px 14px; border-radius:10px; font-weight: 700; cursor:pointer; }
 
-        .footer-note { text-align: center; font-size: 0.75rem; color: #64748b; margin-top: 25px; }
+        .footer-note { text-align: center; font-size: 0.78rem; color: #64748b; margin-top: 25px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -128,7 +162,7 @@
         <i class="fas fa-tools" style="font-size: 4rem; color: #f472b6; margin-bottom: 20px;"></i>
         <h1>Under Maintenance</h1>
         <p style="color: #94a3b8; max-width: 300px;">We are currently updating our delicious menu! We will be back online shortly.</p>
-        <button onclick="openAdminModal()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #777; padding: 6px 12px; border-radius: 8px;">Admin Login</button>
+        <button onclick="openAdminModal()" style="margin-top: 30px; background: transparent; border: 1px solid #555; color: #aaa; padding: 8px 16px; border-radius: 10px; cursor: pointer;">Admin Login</button>
     </div>
 
     <div id="announcementBanner">📢 Notice: Today Special Fresh Strawberry & Red Velvet Available!</div>
@@ -138,12 +172,12 @@
 
     <header>
         <div class="badge">✨ Freshly Baked Everyday</div>
-        <!-- 3 Taps on this Title will open Hidden Admin Panel -->
+        <!-- Tap 3 times on title to open Admin Modal -->
         <h1 onclick="handleTitleClick()">Royal Cake Studio</h1>
         <p>Order Handcrafted Custom Cakes in Seconds</p>
         
         <div class="social-bar">
-            <a href="https://instagram.com/yourinstagram" target="_blank" class="social-btn">
+            <a href="https://instagram.com" target="_blank" class="social-btn">
                 <i class="fab fa-instagram" style="color: #e1306c;"></i> Instagram
             </a>
             <a href="https://wa.me/919876543210" target="_blank" class="social-btn">
@@ -153,11 +187,35 @@
     </header>
 
     <div class="container">
+        <!-- Cake Selection Section -->
         <div class="glass-card">
             <h3 class="section-title"><i class="fas fa-birthday-cake"></i> Popular Flavors</h3>
             <div class="cake-grid" id="cakeGridContainer"></div>
         </div>
 
+        <!-- Customer Reviews Section -->
+        <div class="glass-card">
+            <h3 class="section-title"><i class="fas fa-star"></i> Customer Reviews</h3>
+            <div class="reviews-container">
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">"Dutch Chocolate cake execution was super fresh and delivered right on midnight! Highly recommended."</p>
+                    <p class="review-user">— Priya Sharma</p>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">"Best cake quality in town! Custom message print and taste were amazing."</p>
+                    <p class="review-user">— Amit Verma</p>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">"Super convenient WhatsApp ordering! Fruit cake was soft & delicious."</p>
+                    <p class="review-user">— Neha Patel</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Order Form -->
         <div class="glass-card">
             <h2 class="section-title"><i class="fas fa-edit"></i> Custom Order Form</h2>
 
@@ -175,6 +233,9 @@
             <label>Message on Cake</label>
             <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Rahul!">
 
+            <label>Custom Design Reference Photo URL (Optional)</label>
+            <input type="text" id="customImgUrl" placeholder="Paste Pinterest/Google photo link if any">
+
             <label>Delivery Date</label>
             <input type="date" id="deliveryDate">
 
@@ -190,7 +251,7 @@
             <input type="text" id="custName" placeholder="Enter your full name">
 
             <label>Delivery Address</label>
-            <textarea id="custAddress" rows="2" placeholder="Full address with landmark"></textarea>
+            <textarea id="custAddress" rows="2" placeholder="Full address with house no. & landmark"></textarea>
 
             <div class="price-box">
                 <p>Estimated Total Amount</p>
@@ -202,10 +263,11 @@
             </button>
         </div>
 
-        <p class="footer-note">🔒 Direct WhatsApp Ordering & Secure Customer Support</p>
+        <p class="footer-note">🔒 Direct WhatsApp Ordering & Secure Delivery</p>
     </div>
 
-    <a href="https://wa.me/919876543210?text=Hello!%20I%20have%20a%20question." target="_blank" class="floating-support">
+    <!-- Floating Support Button -->
+    <a href="https://wa.me/919876543210?text=Hello!%20I%20have%20a%20query." target="_blank" class="floating-support" title="Chat with us">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -217,14 +279,14 @@
                 <button class="admin-close" onclick="closeAdminModal()">X</button>
             </div>
             
-            <label>1-Click Maintenance Mode Toggle</label>
+            <label>Maintenance Mode</label>
             <button class="btn-admin-act" id="maintBtn" onclick="toggleMaintenance()" style="background: #eab308;">
                 Turn ON Maintenance Mode
             </button>
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
 
-            <h3>➕ Add New Product / Change Photo</h3>
+            <h3>➕ Add New Product / Update Price</h3>
             <label>Cake Name</label>
             <input type="text" id="newCakeName" placeholder="e.g. Pineapple Delight">
             
@@ -234,28 +296,33 @@
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
 
-            <button class="btn-admin-act" onclick="addNewCake()">Add / Update Product</button>
+            <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.1);">
-            <label>Announcement Notice Message</label>
-            <input type="text" id="announcementInput" placeholder="Enter announcement text...">
-            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: #3b82f6;">Update Announcement</button>
+            <label>Announcement Banner Text</label>
+            <input type="text" id="announcementInput" placeholder="Enter announcement message...">
+            <button class="btn-admin-act" onclick="updateAnnouncement()" style="background: #3b82f6;">Update Banner</button>
         </div>
     </div>
 
     <script>
-        let defaultCakes = [
-            { name: "Dutch Chocolate", price: 500, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
-            { name: "Red Velvet", price: 600, img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
-            { name: "Butterscotch", price: 450, img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" },
-            { name: "Fresh Fruit Cake", price: 550, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300" }
+        // High quality reliable cake images
+        const defaultCakes = [
+            { name: "Dutch Chocolate", price: 500, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80" },
+            { name: "Red Velvet Velvet", price: 600, img: "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?auto=format&fit=crop&w=400&q=80" },
+            { name: "Butterscotch Crunch", price: 450, img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=400&q=80" },
+            { name: "Fresh Berry Delight", price: 550, img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=400&q=80" }
         ];
 
         let cakes = JSON.parse(localStorage.getItem('cakes_data')) || defaultCakes;
         let isMaintenance = localStorage.getItem('site_maintenance') === 'true';
+        let savedAnnouncement = localStorage.getItem('site_announcement');
 
         let clickCount = 0;
         let clickTimer = null;
+
+        // Auto set minimum selectable delivery date to today
+        document.getElementById('deliveryDate').min = new Date().toISOString().split('T')[0];
 
         function handleTitleClick() {
             clickCount++;
@@ -269,44 +336,59 @@
         }
 
         function initApp() {
-            if(isMaintenance) {
-                document.getElementById('maintenanceScreen').style.display = 'flex';
-            } else {
-                document.getElementById('maintenanceScreen').style.display = 'none';
+            // Maintenance Check
+            document.getElementById('maintenanceScreen').style.display = isMaintenance ? 'flex' : 'none';
+
+            // Announcement Banner Check
+            if (savedAnnouncement) {
+                const banner = document.getElementById('announcementBanner');
+                banner.innerText = "📢 " + savedAnnouncement;
+                banner.style.display = 'block';
             }
 
             let gridHTML = "";
             let selectHTML = "";
-            cakes.forEach((c) => {
+
+            cakes.forEach((c, index) => {
                 gridHTML += `
-                    <div class="cake-card" onclick="selectCake('${c.name}', ${c.price})">
-                        <img src="${c.img}" alt="${c.name}">
+                    <div class="cake-card ${index === 0 ? 'selected' : ''}" id="cake-card-${index}" onclick="selectCake('${c.name}', ${c.price}, ${index})">
+                        <img src="${c.img}" alt="${c.name}" onerror="this.src='https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400'">
                         <h4>${c.name}</h4>
                         <p>₹${c.price} / 0.5kg</p>
                     </div>`;
                 selectHTML += `<option value="${c.name}" data-price="${c.price}">${c.name} (₹${c.price} / 0.5kg)</option>`;
             });
+
             document.getElementById('cakeGridContainer').innerHTML = gridHTML;
             document.getElementById('flavor').innerHTML = selectHTML;
             calculatePrice();
         }
 
-        function selectCake(flavorName, price) {
+        function selectCake(flavorName, price, index) {
             let flavorSelect = document.getElementById('flavor');
-            for(let i=0; i < flavorSelect.options.length; i++) {
+            for(let i = 0; i < flavorSelect.options.length; i++) {
                 if(flavorSelect.options[i].value === flavorName) {
                     flavorSelect.selectedIndex = i; break;
                 }
             }
+
+            // Update Selected UI Card Highlight
+            document.querySelectorAll('.cake-card').forEach(card => card.classList.remove('selected'));
+            if(document.getElementById(`cake-card-${index}`)) {
+                document.getElementById(`cake-card-${index}`).classList.add('selected');
+            }
+
             calculatePrice();
         }
 
         function calculatePrice() {
             let flavorSelect = document.getElementById('flavor');
             if(flavorSelect.options.length === 0) return;
+
             let basePrice = parseInt(flavorSelect.options[flavorSelect.selectedIndex].getAttribute('data-price'));
             let weightSelect = document.getElementById('weight');
             let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier'));
+            
             document.getElementById('totalPrice').innerText = '₹' + Math.round(basePrice * multiplier);
         }
 
@@ -319,6 +401,7 @@
                 alert("Wrong Password!");
             }
         }
+
         function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
 
         function toggleMaintenance() {
@@ -329,9 +412,9 @@
         }
 
         function addNewCake() {
-            let name = document.getElementById('newCakeName').value;
-            let price = document.getElementById('newCakePrice').value;
-            let img = document.getElementById('newCakeImg').value;
+            let name = document.getElementById('newCakeName').value.trim();
+            let price = document.getElementById('newCakePrice').value.trim();
+            let img = document.getElementById('newCakeImg').value.trim();
 
             if(!name || !price || !img) { alert("Please fill all details!"); return; }
 
@@ -343,31 +426,47 @@
         }
 
         function updateAnnouncement() {
-            let msg = document.getElementById('announcementInput').value;
-            let banner = document.getElementById('announcementBanner');
+            let msg = document.getElementById('announcementInput').value.trim();
             if(msg) {
-                banner.innerText = "📢 " + msg;
-                banner.style.display = 'block';
-            } else { banner.style.display = 'none'; }
+                localStorage.setItem('site_announcement', msg);
+                savedAnnouncement = msg;
+            } else {
+                localStorage.removeItem('site_announcement');
+                savedAnnouncement = null;
+                document.getElementById('announcementBanner').style.display = 'none';
+            }
+            alert("Announcement Banner Updated!");
             closeAdminModal();
+            initApp();
         }
 
         function sendWhatsAppOrder() {
-            let shopPhoneNumber = "919876543210";
+            let shopPhoneNumber = "919876543210"; // Aapka WhatsApp Number yahan badlein
             let flavor = document.getElementById('flavor').value;
             let weight = document.getElementById('weight').value;
-            let cakeText = document.getElementById('cakeText').value || "None";
+            let cakeText = document.getElementById('cakeText').value.trim() || "None";
+            let customImgUrl = document.getElementById('customImgUrl').value.trim() || "None";
             let date = document.getElementById('deliveryDate').value;
             let time = document.getElementById('deliveryTime').value;
-            let name = document.getElementById('custName').value;
-            let address = document.getElementById('custAddress').value;
+            let name = document.getElementById('custName').value.trim();
+            let address = document.getElementById('custAddress').value.trim();
             let price = document.getElementById('totalPrice').innerText;
 
-            if(!name || !address || !date) { alert("Please fill Name, Address and Delivery Date!"); return; }
+            if(!name || !address || !date) { 
+                alert("Please fill your Name, Delivery Address, and Select Delivery Date!"); 
+                return; 
+            }
 
             let message = `Hello! New Cake Order Received:%0A%0A` +
-                `🎂 *Flavor:* ${flavor}%0A⚖️ *Weight:* ${weight}%0A✍️ *Text:* ${cakeText}%0A` +
-                `📅 *Date:* ${date}%0A⏰ *Time:* ${time}%0A%0A👤 *Customer:* ${name}%0A📍 *Address:* ${address}%0A💰 *Total:* ${price}`;
+                `🎂 *Flavor:* ${flavor}%0A` +
+                `⚖️ *Weight:* ${weight}%0A` +
+                `✍️ *Message on Cake:* ${cakeText}%0A` +
+                `📷 *Photo Reference:* ${customImgUrl}%0A` +
+                `📅 *Delivery Date:* ${date}%0A` +
+                `⏰ *Time Slot:* ${time}%0A%0A` +
+                `👤 *Customer Name:* ${name}%0A` +
+                `📍 *Address:* ${address}%0A` +
+                `💰 *Total Price:* ${price}`;
 
             window.open(`https://wa.me/${shopPhoneNumber}?text=${message}`, '_blank');
         }
