@@ -354,6 +354,10 @@
             }
         }
 
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
         function initApp() {
             if(isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
@@ -384,4 +388,135 @@
         }
 
         function selectCake(flavorName, price) {
-            let flavorSelect = document.getElementById(
+            let flavorSelect = document.getElementById('flavor');
+            flavorSelect.value = flavorName;
+            calculatePrice();
+            window.scrollTo({ top: document.getElementById('flavor').offsetTop - 50, behavior: 'smooth' });
+        }
+
+        function calculatePrice() {
+            let flavorSelect = document.getElementById('flavor');
+            let weightSelect = document.getElementById('weight');
+            
+            if(!flavorSelect.options.length) return;
+
+            let selectedOption = flavorSelect.options[flavorSelect.selectedIndex];
+            let basePrice = parseFloat(selectedOption.getAttribute('data-price')) || 500;
+            let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier')) || 1;
+
+            let total = Math.round(basePrice * multiplier);
+            document.getElementById('totalPrice').innerText = "₹" + total;
+        }
+
+        function sendWhatsAppOrder() {
+            let flavor = document.getElementById('flavor').value;
+            let weight = document.getElementById('weight').value;
+            let cakeText = document.getElementById('cakeText').value || "None";
+            let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
+            let deliveryTime = document.getElementById('deliveryTime').value;
+            let custName = document.getElementById('custName').value;
+            let custAddress = document.getElementById('custAddress').value;
+            let totalPrice = document.getElementById('totalPrice').innerText;
+
+            if(!custName || !custAddress) {
+                alert("Please fill in your Name and Delivery Address!");
+                return;
+            }
+
+            let orderData = {
+                name: custName,
+                flavor: flavor,
+                weight: weight,
+                price: totalPrice,
+                date: new Date().toLocaleString()
+            };
+
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+            orders.unshift(orderData);
+            localStorage.setItem('shop_orders', JSON.stringify(orders));
+
+            let message = `🍰 *NEW CAKE ORDER* 🍰\n\n` +
+                          `*Flavor:* ${flavor}\n` +
+                          `*Weight:* ${weight}\n` +
+                          `*Message on Cake:* ${cakeText}\n` +
+                          `*Delivery Date:* ${deliveryDate}\n` +
+                          `*Time Slot:* ${deliveryTime}\n` +
+                          `*Total Price:* ${totalPrice}\n\n` +
+                          `*Customer Name:* ${custName}\n` +
+                          `*Delivery Address:* ${custAddress}`;
+
+            let encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/919876543210?text=${encodedMessage}`, '_blank');
+        }
+
+        function toggleMaintenance() {
+            isMaintenance = !isMaintenance;
+            localStorage.setItem('site_maintenance', isMaintenance);
+            document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+            alert("Maintenance mode is now " + (isMaintenance ? "ON" : "OFF"));
+            initApp();
+        }
+
+        function addNewCake() {
+            let name = document.getElementById('newCakeName').value.trim();
+            let price = parseFloat(document.getElementById('newCakePrice').value);
+            let img = document.getElementById('newCakeImg').value.trim();
+
+            if(!name || isNaN(price)) {
+                alert("Please enter a valid cake name and price!");
+                return;
+            }
+
+            if(!img) {
+                img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
+            }
+
+            cakes.push({ name: name, price: price, img: img });
+            localStorage.setItem('cakes_data', JSON.stringify(cakes));
+            alert("New Cake added successfully!");
+            
+            document.getElementById('newCakeName').value = "";
+            document.getElementById('newCakePrice').value = "";
+            document.getElementById('newCakeImg').value = "";
+            
+            initApp();
+        }
+
+        function updateAnnouncement() {
+            let text = document.getElementById('announcementInput').value.trim();
+            customAnnouncement = text;
+            localStorage.setItem('site_announcement', text);
+            alert("Announcement banner updated!");
+            initApp();
+        }
+
+        function loadOrderHistory() {
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+            let container = document.getElementById('orderHistoryContainer');
+            
+            if(orders.length === 0) {
+                container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet.</p>`;
+                return;
+            }
+
+            let html = "";
+            orders.forEach(o => {
+                html += `<div class="order-item">
+                    <b>${o.name}</b> ordered ${o.weight} ${o.flavor} (${o.price})<br>
+                    <span style="font-size: 0.7rem; color: #94a3b8;">${o.date}</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function clearOrders() {
+            if(confirm("Are you sure you want to clear order history?")) {
+                localStorage.removeItem('shop_orders');
+                loadOrderHistory();
+            }
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
