@@ -284,7 +284,7 @@
                 <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
                 <option value="Afternoon (2 PM - 5 PM)">Afternoon (2 PM - 5 PM)</option>
                 <option value="Evening (6 PM - 9 PM)">Evening (6 PM - 9 PM)</option>
-                <option value="Midnight Special (11:30 PM)" data-extra="100">Midnight Special (11:30 PM) [₹100 Extra]</option>
+                <option id="midnightSlotLabel" value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
             </select>
 
             <label>PIN Code (Delivery Area Check)</label>
@@ -441,12 +441,14 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 2. PIN Codes & Delivery Charges Config -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-map-marker-alt"></i> Delivery PIN Codes & Charges</h3>
+            <!-- 2. Delivery & Midnight Charges Config -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-truck"></i> Delivery & Midnight Charges</h3>
             <label>Deliverable PIN Codes (Comma separated)</label>
-            <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002, 781003">
-            <label>Extra Delivery Charge (₹)</label>
+            <input type="text" id="adminPincodes" placeholder="e.g. 781001, 781002">
+            <label>Standard Area Delivery Fee (₹)</label>
             <input type="number" id="adminDeliveryFee" placeholder="50">
+            <label>Midnight Delivery Extra Charge (₹)</label>
+            <input type="number" id="adminMidnightFee" placeholder="100">
             <button class="btn-admin-act" onclick="saveDeliveryConfig()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Save Delivery Rules</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
@@ -467,25 +469,25 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 5. Products & Category Manager -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add / Remove Products & Add-ons</h3>
+            <!-- 5. Products, Cakes & Party Add-ons Manager -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-plus-circle"></i> Add Products & Party Add-ons</h3>
             <label>Product Name</label>
-            <input type="text" id="newCakeName" placeholder="e.g. Magic Candle or Pineapple Cake">
+            <input type="text" id="newCakeName" placeholder="e.g. Magic Candle or Chocolate Cake">
             <label>Category</label>
             <select id="newCakeCategory">
-                <option value="Birthday">Birthday</option>
-                <option value="Anniversary">Anniversary</option>
+                <option value="Birthday">Birthday Cake</option>
+                <option value="Anniversary">Anniversary Cake</option>
                 <option value="Cupcakes">Cupcakes</option>
-                <option value="Add-ons">Party Add-ons</option>
+                <option value="Add-ons">Party Add-ons (Candles, Caps, Knife)</option>
             </select>
-            <label>Base Price (₹)</label>
+            <label>Price (₹)</label>
             <input type="number" id="newCakePrice" placeholder="450">
             <label>Photo Image Link URL</label>
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
             <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
-            <label style="margin-top: 12px;">Existing Products Management</label>
-            <div class="order-history-box" id="adminCakesList" style="max-height: 120px;"></div>
+            <label style="margin-top: 12px;">Existing Products & Add-ons Management</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 140px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -518,6 +520,7 @@
             customQrUrl: "",
             pincodes: "781001, 781002, 781003, 781024",
             deliveryFee: 50,
+            midnightFee: 100,
             blockedDate: ""
         };
 
@@ -554,15 +557,14 @@
         let clickCount = 0;
         let clickTimer = null;
 
-        // Audio notification beep sound using Web Audio API
         function playNotificationSound() {
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5 note
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15);
                 gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6);
                 osc.connect(gain);
@@ -609,6 +611,7 @@
                 document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
                 document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
                 document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
+                document.getElementById('adminMidnightFee').value = shopConfig.midnightFee || 100;
                 document.getElementById('adminBlockDate').value = shopConfig.blockedDate || "";
 
                 document.getElementById('maintBtn').innerText = isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
@@ -626,6 +629,9 @@
             document.getElementById('whatsappSupportBtn').href = `https://wa.me/91${shopConfig.whatsapp}`;
             document.getElementById('floatingWhatsAppBtn').href = `https://wa.me/91${shopConfig.whatsapp}?text=Hello!%20I%20have%20a%20question.`;
             
+            let mFee = shopConfig.midnightFee || 100;
+            document.getElementById('midnightSlotLabel').innerText = `Midnight Special (11:30 PM) [₹${mFee} Extra]`;
+
             let qrSource = shopConfig.customQrUrl ? shopConfig.customQrUrl : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${shopConfig.upiId || '6001785308@paytm'}&pn=${encodeURIComponent(shopConfig.name)}`;
             document.getElementById('qrImageDisplay').src = qrSource;
             document.getElementById('qrUpiIdText').innerText = "UPI ID: " + (shopConfig.upiId || "6001785308@paytm");
@@ -715,8 +721,10 @@
         function saveDeliveryConfig() {
             shopConfig.pincodes = document.getElementById('adminPincodes').value.trim();
             shopConfig.deliveryFee = parseFloat(document.getElementById('adminDeliveryFee').value) || 0;
+            shopConfig.midnightFee = parseFloat(document.getElementById('adminMidnightFee').value) || 100;
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Delivery rules updated successfully!");
+            alert("Delivery & Midnight charges updated successfully!");
+            initApp();
         }
 
         function saveBlockDate() {
@@ -880,11 +888,11 @@
                 total = total - (total * (appliedDiscount / 100));
             }
 
-            // Check midnight delivery extra charge
-            let timeSelect = document.getElementById('deliveryTime');
-            let timeOpt = timeSelect.options[timeSelect.selectedIndex];
-            let midnightExtra = parseFloat(timeOpt.getAttribute('data-extra')) || 0;
-            total += midnightExtra;
+            // Check midnight delivery extra charge from config
+            let deliveryTimeVal = document.getElementById('deliveryTime').value;
+            if(deliveryTimeVal.includes("Midnight")) {
+                total += (shopConfig.midnightFee || 100);
+            }
 
             // Add delivery charge if pincode entered
             let pin = document.getElementById('pincodeInput').value.trim();
@@ -950,7 +958,6 @@
             orders.unshift(orderData);
             localStorage.setItem('shop_orders', JSON.stringify(orders));
 
-            // Show digital invoice popup
             document.getElementById('invShopName').innerText = shopConfig.name;
             document.getElementById('invId').innerText = orderId;
             document.getElementById('invCustName').innerText = custName;
@@ -1026,7 +1033,7 @@
 
             cakes.push({ name: name, category: category, price: price, img: img });
             localStorage.setItem('cakes_data', JSON.stringify(cakes));
-            alert("New Product added successfully!");
+            alert("New Product / Add-on added successfully!");
             document.getElementById('newCakeName').value = "";
             document.getElementById('newCakePrice').value = "";
             document.getElementById('newCakeImg').value = "";
@@ -1047,7 +1054,7 @@
         }
 
         function deleteCake(idx) {
-            if(confirm("Are you sure you want to remove this product?")) {
+            if(confirm("Are you sure you want to remove this item?")) {
                 cakes.splice(idx, 1);
                 localStorage.setItem('cakes_data', JSON.stringify(cakes));
                 initApp();
