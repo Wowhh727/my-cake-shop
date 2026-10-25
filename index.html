@@ -11,6 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -323,16 +326,13 @@
             <label>Payment Method</label>
             <select id="paymentMethod" onchange="togglePaymentQR()">
                 <option value="COD">Cash on Delivery (Pay on Delivery)</option>
-                <option value="Online">Online UPI QR Code Payment (Advance)</option>
+                <option value="Online">Online Payment (Razorpay Secure Checkout)</option>
             </select>
 
-            <!-- UPI QR Box -->
+            <!-- Online Payment Notice Box -->
             <div id="upiQrBox" style="display: none; background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; text-align: center; margin-top: 12px; border: 1px dashed #f472b6;">
-                <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">Scan via GPay / PhonePe / Paytm & Pay</p>
-                <img id="qrImageDisplay" src="" alt="UPI QR Code" style="width: 140px; height: 140px; border-radius: 10px; background: #fff; padding: 5px; object-fit: contain;">
-                <p style="font-size: 0.85rem; font-weight: 750; color: #f472b6; margin-top: 8px;" id="qrUpiIdText">UPI ID: 6001785308@paytm</p>
-                <label style="margin-top: 10px;">Enter UPI Transaction / UTR No.</label>
-                <input type="text" id="upiTxnId" placeholder="e.g. 4321XXXXXXXX">
+                <p style="font-size: 0.85rem; color: #f472b6; font-weight: bold;"><i class="fas fa-shield-alt"></i> Razorpay Secure Gateway</p>
+                <p style="font-size: 0.75rem; color: #cbd5e1; margin-top: 4px;">Pay securely via UPI (GPay, PhonePe, Paytm), Credit/Debit Card or Netbanking upon clicking complete order.</p>
             </div>
 
             <label>Your Name</label>
@@ -349,8 +349,8 @@
                 <span id="totalPrice">₹500</span>
             </div>
 
-            <button class="btn-order" onclick="sendWhatsAppOrder()">
-                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Complete WhatsApp Order
+            <button class="btn-order" onclick="initiateCheckout()">
+                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Complete Order
             </button>
         </div>
 
@@ -466,19 +466,17 @@
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
-            <!-- 2. Shop & QR Settings -->
-            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Payment QR Settings</h3>
+            <!-- 2. Shop & Razorpay Key Settings -->
+            <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-store"></i> Shop & Razorpay API Key</h3>
             <label>Shop / Brand Name</label>
             <input type="text" id="adminShopName" placeholder="Priyatam Cake Studio">
             <label>WhatsApp Number (Without +91)</label>
             <input type="text" id="adminWpNum" placeholder="6001785308">
             <label>Instagram Profile URL</label>
             <input type="text" id="adminInstaUrl" placeholder="https://www.instagram.com/priyatam._">
-            <label>UPI ID (e.g. 6001785308@paytm)</label>
-            <input type="text" id="adminUpiId" placeholder="6001785308@paytm">
-            <label>Custom UPI QR Code Image URL (Optional)</label>
-            <input type="text" id="adminCustomQrUrl" placeholder="https://i.ibb.co/...">
-            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop & QR Settings</button>
+            <label>Razorpay Key ID (rzp_live_... or rzp_test_...)</label>
+            <input type="text" id="adminRazorpayKey" placeholder="rzp_test_xxxxxxxxxx">
+            <button class="btn-admin-act" onclick="saveShopSettings()" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">Save Shop & Razorpay Key</button>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -572,8 +570,7 @@
             name: "Priyatam Cake Studio",
             whatsapp: "6001785308",
             instagram: "https://www.instagram.com/priyatam._",
-            upiId: "6001785308@paytm",
-            customQrUrl: "",
+            razorpayKey: "rzp_test_1DP5mmOlF5G5ag", 
             pincodes: "781001, 781002, 781003, 781024",
             deliveryFee: 50,
             freeDeliveryLimit: 999,
@@ -689,8 +686,7 @@
                 document.getElementById('adminShopName').value = shopConfig.name;
                 document.getElementById('adminWpNum').value = shopConfig.whatsapp;
                 document.getElementById('adminInstaUrl').value = shopConfig.instagram;
-                document.getElementById('adminUpiId').value = shopConfig.upiId;
-                document.getElementById('adminCustomQrUrl').value = shopConfig.customQrUrl || "";
+                document.getElementById('adminRazorpayKey').value = shopConfig.razorpayKey || "rzp_test_1DP5mmOlF5G5ag";
                 document.getElementById('adminPincodes').value = shopConfig.pincodes || "";
                 document.getElementById('adminDeliveryFee').value = shopConfig.deliveryFee || 50;
                 document.getElementById('adminFreeDeliveryLimit').value = shopConfig.freeDeliveryLimit || 999;
@@ -726,10 +722,6 @@
             
             let mFee = shopConfig.midnightFee || 100;
             document.getElementById('midnightSlotLabel').innerText = `Midnight Special (11:30 PM) [₹${mFee} Extra]`;
-
-            let qrSource = shopConfig.customQrUrl ? shopConfig.customQrUrl : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${shopConfig.upiId || '6001785308@paytm'}&pn=${encodeURIComponent(shopConfig.name)}`;
-            document.getElementById('qrImageDisplay').src = qrSource;
-            document.getElementById('qrUpiIdText').innerText = "UPI ID: " + (shopConfig.upiId || "6001785308@paytm");
 
             if(isMaintenance) {
                 document.getElementById('maintenanceScreen').style.display = 'flex';
@@ -806,11 +798,10 @@
             shopConfig.name = document.getElementById('adminShopName').value.trim() || "Priyatam Cake Studio";
             shopConfig.whatsapp = document.getElementById('adminWpNum').value.trim() || "6001785308";
             shopConfig.instagram = document.getElementById('adminInstaUrl').value.trim() || "https://www.instagram.com/priyatam._";
-            shopConfig.upiId = document.getElementById('adminUpiId').value.trim() || "6001785308@paytm";
-            shopConfig.customQrUrl = document.getElementById('adminCustomQrUrl').value.trim() || "";
+            shopConfig.razorpayKey = document.getElementById('adminRazorpayKey').value.trim() || "rzp_test_1DP5mmOlF5G5ag";
 
             localStorage.setItem('shop_config', JSON.stringify(shopConfig));
-            alert("Shop & Alarm Settings updated successfully!");
+            alert("Shop & Razorpay Key updated successfully!");
             initApp();
         }
 
@@ -1009,28 +1000,54 @@
             document.getElementById('totalPrice').innerText = "₹" + finalTotal;
         }
 
-        function sendWhatsAppOrder() {
-            let flavor = document.getElementById('flavor').value;
-            let weight = document.getElementById('weight').value;
-            let cakeText = document.getElementById('cakeText').value || "None";
-            let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
-            let deliveryTime = document.getElementById('deliveryTime').value;
-            let paymentMethod = document.getElementById('paymentMethod').value;
-            let upiTxnId = document.getElementById('upiTxnId').value.trim();
+        function initiateCheckout() {
             let custName = document.getElementById('custName').value.trim();
             let custPhone = document.getElementById('custPhone').value.trim();
             let custAddress = document.getElementById('custAddress').value.trim();
-            let totalPrice = document.getElementById('totalPrice').innerText;
+            let paymentMethod = document.getElementById('paymentMethod').value;
+            let totalPriceStr = document.getElementById('totalPrice').innerText.replace('₹', '').trim();
+            let amountInPaise = Math.round(parseFloat(totalPriceStr) * 100);
 
             if(!custName || !custPhone || !custAddress) {
                 alert("Please fill in your Name, Mobile Number and Delivery Address!");
                 return;
             }
 
-            if(paymentMethod === 'Online' && !upiTxnId) {
-                alert("Please enter your UPI Transaction / UTR Number for online payment verification!");
-                return;
+            if(paymentMethod === 'Online') {
+                let options = {
+                    "key": shopConfig.razorpayKey || "rzp_test_1DP5mmOlF5G5ag",
+                    "amount": amountInPaise,
+                    "currency": "INR",
+                    "name": shopConfig.name,
+                    "description": "Online Cake Order Payment",
+                    "handler": function (response){
+                        sendWhatsAppOrder("Online (Paid via Razorpay - Txn ID: " + response.razorpay_payment_id + ")");
+                    },
+                    "prefill": {
+                        "name": custName,
+                        "contact": custPhone
+                    },
+                    "theme": {
+                        "color": "#ec4899"
+                    }
+                };
+                let rzp1 = new Razorpay(options);
+                rzp1.open();
+            } else {
+                sendWhatsAppOrder("Cash on Delivery (COD)");
             }
+        }
+
+        function sendWhatsAppOrder(paymentModeText) {
+            let flavor = document.getElementById('flavor').value;
+            let weight = document.getElementById('weight').value;
+            let cakeText = document.getElementById('cakeText').value || "None";
+            let deliveryDate = document.getElementById('deliveryDate').value || "Standard";
+            let deliveryTime = document.getElementById('deliveryTime').value;
+            let custName = document.getElementById('custName').value.trim();
+            let custPhone = document.getElementById('custPhone').value.trim();
+            let custAddress = document.getElementById('custAddress').value.trim();
+            let totalPrice = document.getElementById('totalPrice').innerText;
 
             let cartSummary = "";
             if(cart.length > 0) {
@@ -1040,7 +1057,7 @@
             }
 
             playNotificationSound();
-            showLiveToast("🚀 New Order Placed Successfully!");
+            showLiveToast("🚀 Order Placed Successfully & Saved to Cloud!");
 
             let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
 
@@ -1054,12 +1071,11 @@
                 dateTime: `${deliveryDate} (${deliveryTime})`,
                 address: custAddress,
                 price: totalPrice,
-                payment: paymentMethod,
+                payment: paymentModeText,
                 status: "Received",
                 timestamp: new Date().toLocaleString()
             };
 
-            // Save order to Firebase Firestore Cloud Database
             db.collection("orders").add(orderData)
               .then(() => {
                   console.log("Order successfully saved to Firebase Cloud!");
@@ -1077,7 +1093,7 @@
             document.getElementById('invMessage').innerText = cakeText;
             document.getElementById('invDateTime').innerText = `${deliveryDate} | ${deliveryTime}`;
             document.getElementById('invAddress').innerText = custAddress;
-            document.getElementById('invPayment').innerText = paymentMethod;
+            document.getElementById('invPayment').innerText = paymentModeText;
             document.getElementById('invTotal').innerText = totalPrice;
             document.getElementById('invoiceModal').style.display = 'flex';
 
@@ -1087,7 +1103,7 @@
                           `*Weight Multiplier:* ${weight}\n` +
                           `*Message on Cake:* ${cakeText}\n` +
                           `*Delivery Date:* ${deliveryDate} (${deliveryTime})\n` +
-                          `*Payment Mode:* ${paymentMethod} ${paymentMethod === 'Online' ? '(Txn ID: '+upiTxnId+')' : ''}\n` +
+                          `*Payment Mode:* ${paymentModeText}\n` +
                           `*Coupon Applied:* ${appliedCouponCode ? appliedCouponCode + ' ('+appliedDiscount+'% off)' : 'None'}\n` +
                           `*Total Payable:* ${totalPrice}\n\n` +
                           `*Customer Name:* ${custName}\n` +
