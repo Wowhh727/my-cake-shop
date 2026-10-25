@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Delights - Fresh & Custom Cakes</title>
+    <!-- Google Fonts for Stylish Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background: #fff5f7; color: #333; }
+        
+        header {
+            background: linear-gradient(135deg, #ff4e50, #f9d423);
+            color: white; text-align: center; padding: 30px 15px;
+            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        header h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 5px; }
+        header p { font-size: 0.9rem; opacity: 0.9; }
+
+        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+
+        .card {
+            background: white; border-radius: 20px; padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 20px;
+        }
+
+        .section-title { font-size: 1.2rem; color: #ff4e50; font-weight: 700; margin-bottom: 15px; }
+
+        label { font-size: 0.85rem; font-weight: 600; color: #555; display: block; margin: 12px 0 5px; }
+        
+        select, input, textarea {
+            width: 100%; padding: 12px 15px; border-radius: 12px;
+            border: 1.5px solid #eee; background: #fafafa; font-size: 0.95rem;
+            outline: none; transition: 0.3s;
+        }
+        select:focus, input:focus, textarea:focus { border-color: #ff4e50; background: #fff; }
+
+        .price-box {
+            background: #fff0f3; border: 2px dashed #ff4e50; border-radius: 15px;
+            padding: 15px; text-align: center; margin-top: 20px;
+        }
+        .price-box span { font-size: 1.8rem; font-weight: 700; color: #ff4e50; }
+
+        .btn-order {
+            width: 100%; background: #25D366; color: white; border: none;
+            padding: 15px; border-radius: 15px; font-size: 1.1rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+        .btn-order:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎂 Royal Cake Studio</h1>
+        <p>Fresh, Delicious & Customized Cakes Delivered to Your Doorstep</p>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2 class="section-title">Order Your Cake</h2>
+
+            <!-- Cake Type -->
+            <label>Select Cake Flavor</label>
+            <select id="flavor" onchange="calculatePrice()">
+                <option value="Dutch Chocolate" data-price="500">Dutch Chocolate (₹500 / 0.5kg)</option>
+                <option value="Vanilla Strawberry" data-price="450">Vanilla Strawberry (₹450 / 0.5kg)</option>
+                <option value="Red Velvet" data-price="600">Red Velvet (₹600 / 0.5kg)</option>
+                <option value="Butterscotch" data-price="450">Butterscotch (₹450 / 0.5kg)</option>
+                <option value="Black Forest" data-price="480">Black Forest (₹480 / 0.5kg)</option>
+            </select>
+
+            <!-- Weight -->
+            <label>Select Weight</label>
+            <select id="weight" onchange="calculatePrice()">
+                <option value="0.5 kg" data-multiplier="1">0.5 kg</option>
+                <option value="1 kg" data-multiplier="1.9">1 kg (Save Offer)</option>
+                <option value="2 kg" data-multiplier="3.6">2 kg (Best Value)</option>
+            </select>
+
+            <!-- Message on Cake -->
+            <label>Text on Cake (Optional)</label>
+            <input type="text" id="cakeText" placeholder="e.g. Happy Birthday Rahul!">
+
+            <!-- Delivery Date & Time -->
+            <label>Delivery Date</label>
+            <input type="date" id="deliveryDate">
+
+            <label>Preferred Time Slot</label>
+            <select id="deliveryTime">
+                <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
+                <option value="Afternoon (2 PM - 5 PM)">Afternoon (2 PM - 5 PM)</option>
+                <option value="Evening (6 PM - 9 PM)">Evening (6 PM - 9 PM)</option>
+                <option value="Midnight Special (11:30 PM)">Midnight Special (11:30 PM)</option>
+            </select>
+
+            <!-- Customer Details -->
+            <label>Your Name</label>
+            <input type="text" id="custName" placeholder="Aapka naam">
+
+            <label>Delivery Address</label>
+            <textarea id="custAddress" rows="2" placeholder="Full address and landmark"></textarea>
+
+            <!-- Total Price -->
+            <div class="price-box">
+                <p style="font-size:0.85rem; color:#666;">Total Estimated Amount</p>
+                <span id="totalPrice">₹500</span>
+            </div>
+
+            <!-- WhatsApp Button -->
+            <button class="btn-order" onclick="sendWhatsAppOrder()">
+                📱 Send Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function calculatePrice() {
+            let flavorSelect = document.getElementById('flavor');
+            let basePrice = parseInt(flavorSelect.options[flavorSelect.selectedIndex].getAttribute('data-price'));
+            
+            let weightSelect = document.getElementById('weight');
+            let multiplier = parseFloat(weightSelect.options[weightSelect.selectedIndex].getAttribute('data-multiplier'));
+
+            let finalPrice = Math.round(basePrice * multiplier);
+            document.getElementById('totalPrice').innerText = '₹' + finalPrice;
+        }
+
+        function sendWhatsAppOrder() {
+            // ⚠️ APNA WHATSAPP NUMBER YAHAN DAALEIN (Country code ke sath, bina + ke, e.g., 919876543210)
+            let shopPhoneNumber = "919876543210";
+
+            let flavor = document.getElementById('flavor').value;
+            let weight = document.getElementById('weight').value;
+            let cakeText = document.getElementById('cakeText').value || "None";
+            let date = document.getElementById('deliveryDate').value;
+            let time = document.getElementById('deliveryTime').value;
+            let name = document.getElementById('custName').value;
+            let address = document.getElementById('custAddress').value;
+            let price = document.getElementById('totalPrice').innerText;
+
+            if(!name || !address || !date) {
+                alert("Kripya Naam, Address aur Delivery Date bharein!");
+                return;
+            }
+
+            let message = `Hello! Mujhko ek cake order karna hai:%0A%0A` +
+                `🎂 *Flavor:* ${flavor}%0A` +
+                `⚖️ *Weight:* ${weight}%0A` +
+                `✍️ *Text on Cake:* ${cakeText}%0A` +
+                `📅 *Delivery Date:* ${date}%0A` +
+                `⏰ *Time Slot:* ${time}%0A%0A` +
+                `👤 *Customer Name:* ${name}%0A` +
+                `📍 *Address:* ${address}%0A` +
+                `💰 *Total Price:* ${price}`;
+
+            let url = `https://wa.me/${shopPhoneNumber}?text=${message}`;
+                window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
