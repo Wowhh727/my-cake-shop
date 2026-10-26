@@ -97,6 +97,7 @@
 
         .cake-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .cake-card {
+            position: relative;
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 18px; overflow: hidden; text-align: center; padding: 12px; 
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; justify-content: space-between;
@@ -110,6 +111,21 @@
             padding: 7px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s;
         }
         .btn-add-cart:active { transform: scale(0.95); }
+
+        /* Out of Stock Badge & Button State */
+        .sold-out-tag {
+            position: absolute; top: 18px; right: 18px;
+            background: rgba(239, 68, 68, 0.92); color: #fff;
+            font-size: 0.65rem; font-weight: 800; padding: 3px 8px;
+            border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 2;
+        }
+        .btn-add-cart.disabled-stock {
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            cursor: not-allowed;
+        }
 
         /* Floating Cart Bar */
         .floating-cart {
@@ -214,6 +230,19 @@
             border-radius: 28px; max-width: 480px; margin: 20px auto; padding: 28px; color: #fff;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
         }
+
+        /* Admin Revenue Stats Grid */
+        .admin-stats-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px;
+        }
+        .admin-stat-card {
+            background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(56,189,248,0.12));
+            border: 1px solid rgba(244, 114, 182, 0.35);
+            border-radius: 16px; padding: 14px 12px; text-align: center;
+        }
+        .admin-stat-card p { font-size: 0.72rem; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .admin-stat-card h4 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #4ade80; }
+
         .btn-admin-act {
             background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none;
             padding: 14px 18px; border-radius: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; width: 100%;
@@ -221,7 +250,7 @@
 
         .order-history-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-top: 10px; max-height: 180px; overflow-y: auto; font-size: 0.8rem; color: #cbd5e1; }
         .order-item { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 0; }
-        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; }
+        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 10px; margin-bottom: 6px; font-size: 0.82rem; gap: 8px; }
 
         .footer-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 20px; }
 
@@ -472,6 +501,18 @@
                 <h3>⚙️ Master Admin Control</h3>
                 <button class="close-btn" onclick="closeAdminModal()"><i class="fas fa-times"></i></button>
             </div>
+
+            <!-- LIVE TOTAL SALES & REVENUE COUNTER -->
+            <div class="admin-stats-grid">
+                <div class="admin-stat-card">
+                    <p><i class="fas fa-shopping-bag"></i> Total Orders</p>
+                    <h4 id="adminTotalOrdersCount" style="color: #38bdf8;">0</h4>
+                </div>
+                <div class="admin-stat-card">
+                    <p><i class="fas fa-rupee-sign"></i> Total Revenue</p>
+                    <h4 id="adminTotalRevenueAmount">₹0</h4>
+                </div>
+            </div>
             
             <!-- 0. Change Admin Password -->
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-key"></i> Change Admin Password</h3>
@@ -485,7 +526,7 @@
             <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 6px;"><i class="fas fa-bullhorn"></i> Announcement & Sound Settings</h3>
             <label>Top Announcement Banner Text (Leave empty to hide)</label>
             <input type="text" id="adminAnnouncementInput" placeholder="e.g. Today Special Fresh Strawberry Available!">
-            <label>Order Notification Audio Alert</label>
+            <label>Order Notification Audio Alert (Live Bell)</label>
             <select id="adminSoundToggle">
                 <option value="ON">Enabled (Loud Alarm On New Order)</option>
                 <option value="OFF">Disabled</option>
@@ -557,8 +598,8 @@
             <input type="text" id="newCakeImg" placeholder="https://images.unsplash.com/...">
             <button class="btn-admin-act" onclick="addNewCake()">Add Product</button>
 
-            <label style="margin-top: 12px;">Existing Products & Add-ons Management</label>
-            <div class="order-history-box" id="adminCakesList" style="max-height: 150px;"></div>
+            <label style="margin-top: 12px;">Existing Products (Stock Toggle & Delete)</label>
+            <div class="order-history-box" id="adminCakesList" style="max-height: 170px;"></div>
 
             <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.1);">
 
@@ -615,12 +656,12 @@
         };
 
         let defaultCakes = [
-            { name: "Dutch Chocolate", price: 500, category: "Birthday", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
-            { name: "Red Velvet", price: 600, category: "Anniversary", img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
-            { name: "Butterscotch", price: 450, category: "Birthday", img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" },
-            { name: "Choco Cupcakes (6pcs)", price: 350, category: "Cupcakes", img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
-            { name: "Magic Sparkle Candles", price: 50, category: "Add-ons", img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300" },
-            { name: "Birthday Cap & Popper Set", price: 120, category: "Add-ons", img: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300" }
+            { name: "Dutch Chocolate", price: 500, category: "Birthday", inStock: true, img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" },
+            { name: "Red Velvet", price: 600, category: "Anniversary", inStock: true, img: "https://images.unsplash.com/photo-1586788680344-d26d8479dccb?w=300" },
+            { name: "Butterscotch", price: 450, category: "Birthday", inStock: true, img: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?w=300" },
+            { name: "Choco Cupcakes (6pcs)", price: 350, category: "Cupcakes", inStock: true, img: "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=300" },
+            { name: "Magic Sparkle Candles", price: 50, category: "Add-ons", inStock: true, img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=300" },
+            { name: "Birthday Cap & Popper Set", price: 120, category: "Add-ons", inStock: true, img: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=300" }
         ];
 
         let defaultReviews = [
@@ -646,6 +687,12 @@
 
         let clickCount = 0;
         let clickTimer = null;
+
+        // Real-time Order Listener state (Admin-Only)
+        let isInitialOrdersSnapshot = true;
+        let adminLiveListenerStarted = false;
+        let lastLocalOrderId = "";
+        let cachedOrdersList = [];
 
         // Sync store settings with Firebase Cloud so all customers see Admin updates
         function syncStoreSettingsToCloud() {
@@ -678,12 +725,68 @@
                         localStorage.setItem('coupons_data', JSON.stringify(coupons));
                     }
                     applyConfigToUI();
+                    if (document.getElementById('adminModal').style.display === 'block') {
+                        loadAdminCakesList();
+                        loadAdminCouponsList();
+                    }
                 } else {
                     syncStoreSettingsToCloud();
                 }
             }, (err) => {
                 console.warn("Using local fallback config:", err);
             });
+        }
+
+        // Real-time Order Alarm Bell & Live Revenue Updater (Starts ONLY after Admin Login)
+        function listenToLiveOrders() {
+            db.collection("orders").onSnapshot((snapshot) => {
+                let ordersList = [];
+                snapshot.forEach((doc) => {
+                    ordersList.push({ docId: doc.id, ...doc.data() });
+                });
+                ordersList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                cachedOrdersList = ordersList;
+
+                // Update Revenue & Order Counter live
+                updateAdminRevenueStats(ordersList);
+
+                // If Admin Modal is open, refresh the order history box automatically
+                if (document.getElementById('adminModal').style.display === 'block') {
+                    renderOrdersListHTML(ordersList);
+                }
+
+                // Trigger Real-time Order Alarm Bell on newly added orders after initial load
+                if (!isInitialOrdersSnapshot) {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            let newOrder = change.doc.data();
+                            if (newOrder.id !== lastLocalOrderId) {
+                                playNotificationSound();
+                                showLiveToast(`🔔 New Order ${newOrder.id} (${newOrder.price}) from ${newOrder.name}!`);
+                            }
+                        }
+                    });
+                }
+                isInitialOrdersSnapshot = false;
+            }, (err) => {
+                console.warn("Live orders listener error:", err);
+            });
+        }
+
+        function updateAdminRevenueStats(ordersList) {
+            let totalOrdersEl = document.getElementById('adminTotalOrdersCount');
+            let totalRevEl = document.getElementById('adminTotalRevenueAmount');
+            if (!totalOrdersEl || !totalRevEl) return;
+
+            let totalCount = ordersList.length;
+            let totalRevenue = 0;
+            ordersList.forEach((o) => {
+                let numericPrice = parseFloat(String(o.price || "0").replace(/[^0-9.]/g, "")) || 0;
+                totalRevenue += numericPrice;
+            });
+
+            totalOrdersEl.innerText = totalCount;
+            totalRevEl.innerText = "₹" + totalRevenue.toLocaleString('en-IN');
         }
 
         function setMinDeliveryDate() {
@@ -782,6 +885,13 @@
                 document.getElementById('adminBlockDate').value = shopConfig.blockedDate || "";
 
                 document.getElementById('maintBtn').innerText = shopConfig.isMaintenance ? "Turn OFF Maintenance Mode" : "Turn ON Maintenance Mode";
+                
+                // Start Real-time Order Alarm Bell ONLY for Admin session
+                if (!adminLiveListenerStarted) {
+                    listenToLiveOrders();
+                    adminLiveListenerStarted = true;
+                }
+
                 loadOrderHistory();
                 loadAdminCakesList();
                 loadAdminCouponsList();
@@ -851,29 +961,41 @@
             let gridHTML = "";
             let selectHTML = "";
             let previousFlavor = document.getElementById('flavor').value;
+            let firstAvailableIdx = -1;
 
             cakes.forEach((c, idx) => {
+                let isAvailable = (c.inStock !== false);
+                if (isAvailable && firstAvailableIdx === -1) {
+                    firstAvailableIdx = idx;
+                }
+
                 if (currentFilter === 'All' || c.category === currentFilter) {
                     gridHTML += `
                         <div class="cake-card">
-                            <div>
+                            ${!isAvailable ? '<span class="sold-out-tag">Sold Out</span>' : ''}
+                            <div style="${!isAvailable ? 'opacity: 0.55;' : ''}">
                                 <img src="${c.img}" alt="${c.name}" loading="lazy">
                                 <h4>${c.name}</h4>
                                 <p>₹${c.price} ${(c.category === 'Add-ons' || c.category === 'Cupcakes') ? '' : '/ 0.5kg'}</p>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCartByIndex(${idx})">
-                                <i class="fas fa-cart-plus"></i> Add to Cart
-                            </button>
+                            ${isAvailable
+                                ? `<button class="btn-add-cart" onclick="addToCartByIndex(${idx})"><i class="fas fa-cart-plus"></i> Add to Cart</button>`
+                                : `<button class="btn-add-cart disabled-stock" disabled><i class="fas fa-ban"></i> Out of Stock</button>`
+                            }
                         </div>`;
                 }
-                selectHTML += `<option value="${idx}">${c.name} (₹${c.price})</option>`;
+                selectHTML += `<option value="${idx}" ${!isAvailable ? 'disabled' : ''}>${c.name} (₹${c.price})${!isAvailable ? ' - [Out of Stock]' : ''}</option>`;
             });
 
             document.getElementById('cakeGridContainer').innerHTML = gridHTML;
             let flavorEl = document.getElementById('flavor');
             flavorEl.innerHTML = selectHTML;
-            if (previousFlavor && flavorEl.querySelector(`option[value="${previousFlavor}"]`)) {
+
+            let prevOpt = previousFlavor ? flavorEl.querySelector(`option[value="${previousFlavor}"]`) : null;
+            if (prevOpt && !prevOpt.disabled) {
                 flavorEl.value = previousFlavor;
+            } else if (firstAvailableIdx !== -1) {
+                flavorEl.value = String(firstAvailableIdx);
             }
             calculatePrice();
         }
@@ -969,6 +1091,10 @@
         function addToCartByIndex(idx) {
             let itemObj = cakes[idx];
             if (!itemObj) return;
+            if (itemObj.inStock === false) {
+                showLiveToast("❌ Sorry, this item is currently Out of Stock!");
+                return;
+            }
             let existing = cart.find(item => item.name === itemObj.name);
             if(existing) {
                 existing.qty += 1;
@@ -1032,16 +1158,19 @@
             let html = "";
             cart.forEach((item, index) => {
                 let itemTotal = item.price * item.qty;
+                let liveItem = cakes.find(c => c.name === item.name);
+                let isSoldOut = liveItem && liveItem.inStock === false;
                 html += `
-                    <div class="cart-item-row">
+                    <div class="cart-item-row" style="${isSoldOut ? 'border-color:#ef4444; background:rgba(239,68,68,0.1);' : ''}">
                         <div>
-                            <b>${item.name}</b> <span style="font-size:0.7rem; color:#94a3b8;">(${item.category || 'Cake'})</span><br>
+                            <b>${item.name}</b> <span style="font-size:0.7rem; color:#94a3b8;">(${item.category || 'Cake'})</span>
+                            ${isSoldOut ? '<span style="color:#f87171; font-size:0.7rem; font-weight:800;"> [SOLD OUT]</span>' : ''}<br>
                             <span style="font-size: 0.75rem; color: #f472b6;">Base: ₹${item.price} × ${item.qty} = ₹${itemTotal}</span>
                         </div>
                         <div class="cart-controls">
                             <button onclick="changeQty(${index}, -1)">-</button>
                             <span>${item.qty}</span>
-                            <button onclick="changeQty(${index}, 1)">+</button>
+                            <button onclick="changeQty(${index}, 1)" ${isSoldOut ? 'disabled style="opacity:0.4;"' : ''}>+</button>
                             <button onclick="removeFromCart(${index})" style="background: rgba(239,68,68,0.3); color:#f87171;"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>`;
@@ -1179,8 +1308,29 @@
             let custAddress = document.getElementById('custAddress').value.trim();
             let totalPrice = "₹" + currentFinalPayable;
 
+            // Check Out-of-Stock items in both Cart and Dropdown
+            if (cart.length > 0) {
+                let outOfStockItem = cart.find(item => {
+                    let liveItem = cakes.find(c => c.name === item.name);
+                    return liveItem && liveItem.inStock === false;
+                });
+                if (outOfStockItem) {
+                    alert(`Sorry, "${outOfStockItem.name}" in your cart is currently Out of Stock! Please remove it from your cart to continue.`);
+                    openCartModal();
+                    return;
+                }
+            } else if (selectedCake.inStock === false) {
+                alert("Sorry, the selected item is currently Out of Stock! Please choose another item.");
+                return;
+            }
+
             if(!deliveryDate) {
                 alert("Please select a valid Delivery Date!");
+                return;
+            }
+
+            if(shopConfig.blockedDate && deliveryDate === shopConfig.blockedDate) {
+                alert("Sorry! We are closed or fully booked on this date. Please select another date.");
                 return;
             }
 
@@ -1214,10 +1364,11 @@
                 cartSummary = selectedCake.name;
             }
 
+            let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
+            lastLocalOrderId = orderId;
+
             playNotificationSound();
             showLiveToast("🚀 New Order Placed Successfully!");
-
-            let orderId = "#" + Math.floor(100000 + Math.random() * 900000);
 
             let orderData = {
                 id: orderId,
@@ -1335,7 +1486,7 @@
             }
             if(!img) img = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300";
 
-            cakes.push({ name: name, category: category, price: price, img: img });
+            cakes.push({ name: name, category: category, price: price, inStock: true, img: img });
             syncStoreSettingsToCloud();
             alert("New Product / Add-on added to Cloud!");
             document.getElementById('newCakeName').value = "";
@@ -1349,12 +1500,31 @@
             let container = document.getElementById('adminCakesList');
             let html = "";
             cakes.forEach((c, idx) => {
+                let isAvailable = (c.inStock !== false);
                 html += `<div class="manage-list-item">
-                    <span><b>${c.name}</b> (${c.category} - ₹${c.price})</span>
-                    <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                    <span style="flex:1;">
+                        <b>${c.name}</b> (${c.category} - ₹${c.price})
+                        <span style="font-size:0.7rem; color:${isAvailable ? '#4ade80' : '#f87171'}; font-weight:700;">[${isAvailable ? 'In Stock' : 'Sold Out'}]</span>
+                    </span>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="toggleCakeStock(${idx})" style="background:${isAvailable ? '#eab308' : '#22c55e'}; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.72rem; font-weight:700;">
+                            ${isAvailable ? 'Mark Sold Out' : 'Mark In Stock'}
+                        </button>
+                        <button onclick="deleteCake(${idx})" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:0.72rem;"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
+        }
+
+        // 1-Click Out-of-Stock / In-Stock Toggle
+        function toggleCakeStock(idx) {
+            if (!cakes[idx]) return;
+            cakes[idx].inStock = (cakes[idx].inStock === false) ? true : false;
+            syncStoreSettingsToCloud();
+            applyConfigToUI();
+            loadAdminCakesList();
+            showLiveToast(`${cakes[idx].name} is now ${cakes[idx].inStock ? 'In Stock ✅' : 'Out of Stock 🚫'}`);
         }
 
         function deleteCake(idx) {
@@ -1406,40 +1576,51 @@
             loadAdminCouponsList();
         }
 
+        function renderOrdersListHTML(ordersList) {
+            let container = document.getElementById('orderHistoryContainer');
+            if (!container) return;
+            if (ordersList.length === 0) {
+                container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet in cloud database.</p>`;
+                return;
+            }
+            let html = "";
+            ordersList.forEach((o) => {
+                let statusColor = o.status === 'Delivered' ? '#22c55e' : (o.status === 'Baking' ? '#38bdf8' : '#fbbf24');
+                html += `<div class="order-item">
+                    <b>${o.id} - ${o.name}</b> (${o.phone})<br>
+                    Ordered: ${o.flavor} | <b>${o.price}</b><br>
+                    Delivery: ${o.dateTime || 'Standard'}<br>
+                    Status: <span style="color: ${statusColor}; font-weight: bold;">${o.status}</span>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        <select onchange="updateOrderStatus('${o.docId}', this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
+                            <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
+                            <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
+                            <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                            <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                        </select>
+                        <button onclick="sendWhatsAppStatusBot('${o.phone}', '${o.id}', '${o.status}')" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Update"><i class="fab fa-whatsapp"></i> Update</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
         function loadOrderHistory() {
+            if (cachedOrdersList.length > 0) {
+                updateAdminRevenueStats(cachedOrdersList);
+                renderOrdersListHTML(cachedOrdersList);
+                return;
+            }
             let container = document.getElementById('orderHistoryContainer');
             db.collection("orders").get().then((querySnapshot) => {
-                if(querySnapshot.empty) {
-                    container.innerHTML = `<p style="color: #64748b; text-align: center;">No orders yet in cloud database.</p>`;
-                    return;
-                }
                 let ordersList = [];
                 querySnapshot.forEach((doc) => {
                     ordersList.push({ docId: doc.id, ...doc.data() });
                 });
-                // Sort by numeric timestamp (newest first)
                 ordersList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                let html = "";
-                ordersList.forEach((o) => {
-                    let statusColor = o.status === 'Delivered' ? '#22c55e' : (o.status === 'Baking' ? '#38bdf8' : '#fbbf24');
-                    html += `<div class="order-item">
-                        <b>${o.id} - ${o.name}</b> (${o.phone})<br>
-                        Ordered: ${o.flavor} | <b>${o.price}</b><br>
-                        Delivery: ${o.dateTime || 'Standard'}<br>
-                        Status: <span style="color: ${statusColor}; font-weight: bold;">${o.status}</span>
-                        <div style="display:flex; gap:6px; margin-top:6px;">
-                            <select onchange="updateOrderStatus('${o.docId}', this.value)" style="padding: 4px; font-size: 0.75rem; flex:1;">
-                                <option value="Received" ${o.status==='Received'?'selected':''}>Received</option>
-                                <option value="Baking" ${o.status==='Baking'?'selected':''}>Baking</option>
-                                <option value="Out for Delivery" ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-                                <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                            </select>
-                            <button onclick="sendWhatsAppStatusBot('${o.phone}', '${o.id}', '${o.status}')" style="background:#25D366; border:none; color:#fff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; font-weight:bold;" title="Send WhatsApp Status Update"><i class="fab fa-whatsapp"></i> Update</button>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
+                cachedOrdersList = ordersList;
+                updateAdminRevenueStats(ordersList);
+                renderOrdersListHTML(ordersList);
             }).catch((error) => {
                 container.innerHTML = `<p style="color: #ef4444; text-align: center;">Error loading orders.</p>`;
             });
@@ -1449,7 +1630,6 @@
             db.collection("orders").doc(docId).update({
                 status: newStatus
             }).then(() => {
-                loadOrderHistory();
                 showLiveToast("✅ Status updated to: " + newStatus);
             }).catch((error) => {
                 alert("Error updating status.");
@@ -1470,7 +1650,9 @@
                     });
                     return batch.commit();
                 }).then(() => {
-                    loadOrderHistory();
+                    cachedOrdersList = [];
+                    updateAdminRevenueStats([]);
+                    renderOrdersListHTML([]);
                     alert("Cloud orders cleared successfully.");
                 });
             }
